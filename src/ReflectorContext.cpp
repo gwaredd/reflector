@@ -33,9 +33,11 @@
 static StringRef                        _strNull( 0, 0 );
 static std::pair<StringRef,StringRef>   _nullPair( _strNull, _strNull );
 
-const char* const ReflectorContext::PITag           = "%reflect";
-const char* const ReflectorContext::ParentPITag     = "%%reflect";
-
+const char* const ReflectorContext::PITagHint           = "%";
+const char* const ReflectorContext::PITag               = "%reflect";
+const char* const ReflectorContext::PITagParent         = "%%reflect";
+const char* const ReflectorContext::PITagBookmarkStart  = "%<";
+const char* const ReflectorContext::PITagBookmarkEnd    = "%>";
 
 //////////////////////////////////////////////////////////////////////////
 // pop_word - given a string, return the next word as a <word,tail> pair
@@ -163,26 +165,29 @@ void ReflectorContext::ProcessCommands( StringRef strRemaining, SourceLocation& 
         // "pop" next line off of the string
         StringRef curLine = _GetNextLine( strRemaining, lineOffset );
 
-        // does it start with [%]%reflect?
+        // does the current line start with a PI tag ([%]%reflect, %< or %>)?
 
         State* pState  = &CurrentState();
         State* pParent = NULL;
 
-        if( curLine.startswith( ParentPITag ) )
+        if( curLine.startswith( PITagParent ) )
         {
             pParent = ParentState();
         }
-        else if( !curLine.startswith( PITag ) )
+        else if( curLine.startswith( PITag ) )
+        {
+            pParent = NULL;
+        }
+        else if( curLine.startswith( PITagBookmarkStart ) || curLine.startswith( PITagBookmarkEnd ) )
+        {
+            ProcessBookmark( curLine, loc, lineOffset );
+            continue;
+        }
+        else
         {
             // %reflect not found at start of line so skip it
             continue;
         }
-
-        // any %reflect tags automatically turn on exporting if not already
-
-        pState->reflect = true;
-        if( pParent ) pParent->reflect = true;
-
 
         // pop %reflect tag from current line
 
@@ -198,12 +203,23 @@ void ReflectorContext::ProcessCommands( StringRef strRemaining, SourceLocation& 
             unsigned int    lineNumber  = mpSourceManager->getLineNumber( fileID, fileOffset ) + lineOffset;
 
             printf( "DEBUG: %-16s %s, %s(%i)\n", 
-                        pParent ? ParentPITag : PITag,
+                        cmd.first.str().c_str(),
                         cmd.second.empty() ? "''" : cmd.second.str().c_str(),
                         pFileEntry ? pFileEntry->getName() : "???",
                         lineNumber
                     );
         }
+
+
+        // any %reflect tags automatically turn on exporting
+
+        pState->reflect = true;
+
+        if( pParent )
+        {
+            pParent->reflect = true;
+        }
+
 
 
         // process commands
@@ -311,10 +327,6 @@ void ReflectorContext::ProcessCommands( StringRef strRemaining, SourceLocation& 
             {
                 SetAttribute( word.second );
             }
-            else if( word.first == "bm" )
-            {
-                ProcessBookmark( word.second, loc, lineOffset );
-            }
             else if( word.first == "debug" )
             {
                 pState->debug = enable;
@@ -331,10 +343,50 @@ void ReflectorContext::ProcessCommands( StringRef strRemaining, SourceLocation& 
 
 
 //////////////////////////////////////////////////////////////////////////
-// %reflect bm [name]
+// %<[name][>] or %>
 
-void ReflectorContext::ProcessBookmark( StringRef name, SourceLocation& loc, unsigned int lineOffset )
+void ReflectorContext::ProcessBookmark( StringRef str, SourceLocation& loc, unsigned int lineOffset )
 {
+    // validate input
+
+    if( str.size() < 2 )
+    {
+        return;
+    }
+
+    // parse bookmark
+    Bookmark::eType type = Bookmark::kBookmark;
+    StringRef       name;
+
+    if( str[1] == '<' )
+    {
+        size_t pos = str.find( '>' );
+
+        if( pos == StringRef::npos )
+        {
+            // %<...
+            name = str.substr( 2 );
+            type = Bookmark::kRegionStart;
+        }
+        else
+        {
+            // %<...>
+            type = Bookmark::kBookmark;
+            name = str.substr( 2, pos - 2 );
+        }
+    }
+    else if( str[1] == '>' )
+    {
+        type = Bookmark::kRegionEnd;
+    }
+    else
+    {
+        // unknown type
+        return;
+    }
+
+
+    // bookmark location
     std::pair<FileID, unsigned> locInfo = mpSourceManager->getDecomposedLoc( loc );
 
     FileID          fileID      = locInfo.first;
@@ -342,7 +394,8 @@ void ReflectorContext::ProcessBookmark( StringRef name, SourceLocation& loc, uns
     unsigned int    lineNumber  = mpSourceManager->getLineNumber( fileID, fileOffset ) + lineOffset;
     const FileEntry*pFileEntry  = mpSourceManager->getFileEntryForID( fileID );
 
-    mBookmarks.push_back( Bookmark( name, pFileEntry ? pFileEntry->getName() : NULL, lineNumber ) );
+    // add bookmark
+    mBookmarks.push_back( Bookmark( name, type, pFileEntry ? pFileEntry->getName() : NULL, lineNumber ) );
 }
 
 //////////////////////////////////////////////////////////////////////////

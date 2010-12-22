@@ -95,10 +95,15 @@ Reflector Commands
         
         attribute [k=v[;k=v]]   add metadata to declaration, e.g. attribute min=3;max=10
 
-        bm [name]           export source code bookmark
-        
         debug               turn on debug
 
+    bookmarks
+
+        special tags can be used to "bookmark" places in the source code (e.g. where code
+        should be inserted). There are of the form ...
+
+        // %<[name][>]
+        // %>               end region
 
     
 

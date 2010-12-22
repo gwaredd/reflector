@@ -36,8 +36,7 @@ struct Sphere : public Shape
     Vector  pos;
     float   radius;
 
-    // %reflect bm auto
-    // %reflect bm end
+    // %<auto>
 };
 
 struct Plane : public Shape
@@ -45,8 +44,8 @@ struct Plane : public Shape
     Vector  normal;
     float   d;
 
-    // %reflect bm auto
-    // %reflect bm end
+    // %<auto
+    // %>
 };
 
 struct Line : public Shape
@@ -54,8 +53,7 @@ struct Line : public Shape
     Vector pos;
     Vector dir;
 
-    // %reflect bm auto
-    // %reflect bm end
+    // %<auto>
 };
 
 struct Box : public Shape
@@ -63,7 +61,8 @@ struct Box : public Shape
     Vector max;
     Vector min;
 
-    // %reflect bm auto
-    // %reflect bm end
+    // %<auto
+    void SomeFunction();
+    // %>
 };
 

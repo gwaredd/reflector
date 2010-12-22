@@ -29,27 +29,29 @@ sub ExtractBookmarks
         {
             next unless $bm->name eq "bookmark";
 
-            my $file = $bm->attribute('file');
             my $name = $bm->attribute('name');
+            my $type = $bm->attribute('type');
+            my $file = $bm->attribute('file');
             my $line = $bm->attribute('line');
 
-            $file = "unknown" unless $file;
             $name = "" unless $name;
+            $type = "" unless $type;
+            $file = "unknown" unless $file;
             $line = -1 unless $file;
 
             $g_bookmarks{$file} = [] unless $g_bookmarks{$file};
 
-            push @{$g_bookmarks{$file}}, [ $line, $name, $node ];
+            push @{$g_bookmarks{$file}}, { line => $line, name => $name, type => $type, node => $node };
         }
     }
 
-    # sort by line number
-    # (probably unecessary as they will exist in order in the xml)
-
-    foreach my $k (keys %g_bookmarks)
-    {
-        sort { $a->[0] <=> $b->[0] } @{$g_bookmarks{$k}};
-    }
+#    # sort by line number
+#    # (probably unecessary as they will exist in order in the xml)
+#
+#    foreach my $k (keys %g_bookmarks)
+#    {
+#        my @s = sort { $a->{'line'} <=> $b->{'line'} } @{$g_bookmarks{$k}};;
+#    }
 }
 
 
@@ -57,10 +59,11 @@ sub ExtractBookmarks
 
 sub ExpandNode
 {
-    my ( $fh, $indent, $node) = @_;
+    my ( $fh, $indent, $node, $close ) = @_;
+
+    print $fh $indent."<%auto\n";
 
     print $fh $indent."DECLARE_RTTI\n\n";
-
 
     foreach my $var ($node->children())
     {
@@ -71,6 +74,11 @@ sub ExpandNode
 
         printf( $fh "%s%-10s Get%s();\n", $indent, "$type&", ucfirst($name) );
         printf( $fh "%s%-10s Set%s( $type& );\n", $indent, "void", ucfirst($name) );
+    }
+
+    if( $close )
+    {
+        print $fh $indent."%>\n";
     }
 }
 
@@ -96,38 +104,41 @@ sub ProcessBookmarks
 
     while( <FIN> )
     {
-        if( !$skip )
-        {
-            print FOUT $_;
-        }
-
         # if the current line is bookmarked ...
 
-        if( defined($bm) and $bm->[0] == $. )
+        if( defined($bm) and $bm->{'line'} == $. )
         {
             # what bookmark type is it?
 
-            if( $bm->[1] eq "end" )
+            if( $bm->{'type'} eq "region_end" )
             {
                 print FOUT $_;
                 $skip = 0;
             }
-            elsif( $bm->[1] eq "auto" )
+            elsif( $bm->{'name'} eq "auto" )
             {
                 my ($indent) = ($_ =~ m/^(\s+)/);
 
-                ExpandNode( *FOUT, $indent, $bm->[2] );
-                $skip = 1;
+                ExpandNode( *FOUT, $indent, $bm->{'node'}, $bm->{'type'} eq "region_start" ? 0 : 1 );
+
+                if( $bm->{'type'} eq "region_start" )
+                {
+                    $skip = 1;
+                }
             }
             else
             {
-                warn "Unknown bookmark type '$bm->[1]'\n";
+                warn "Unknown bookmark type '$bm->{name}'\n";
             }
 
 
             # next bookmark
 
             $bm = shift @{$bookmarks};
+        }
+        elsif( !$skip )
+        {
+            print FOUT $_;
         }
     }
 

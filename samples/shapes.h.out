@@ -36,14 +36,14 @@ struct Sphere : public Shape
     Vector  pos;
     float   radius;
 
-    // %reflect bm auto
+    <%auto
     DECLARE_RTTI
 
     Vector&    GetPos();
     void       SetPos( Vector& );
     float&     GetRadius();
     void       SetRadius( float& );
-    // %reflect bm end
+    %>
 };
 
 struct Plane : public Shape
@@ -51,14 +51,14 @@ struct Plane : public Shape
     Vector  normal;
     float   d;
 
-    // %reflect bm auto
+    <%auto
     DECLARE_RTTI
 
     Vector&    GetNormal();
     void       SetNormal( Vector& );
     float&     GetD();
     void       SetD( float& );
-    // %reflect bm end
+    // %>
 };
 
 struct Line : public Shape
@@ -66,14 +66,14 @@ struct Line : public Shape
     Vector pos;
     Vector dir;
 
-    // %reflect bm auto
+    <%auto
     DECLARE_RTTI
 
     Vector&    GetPos();
     void       SetPos( Vector& );
     Vector&    GetDir();
     void       SetDir( Vector& );
-    // %reflect bm end
+    %>
 };
 
 struct Box : public Shape
@@ -81,13 +81,13 @@ struct Box : public Shape
     Vector max;
     Vector min;
 
-    // %reflect bm auto
+    <%auto
     DECLARE_RTTI
 
     Vector&    GetMax();
     void       SetMax( Vector& );
     Vector&    GetMin();
     void       SetMin( Vector& );
-    // %reflect bm end
+    // %>
 };
 

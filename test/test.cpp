@@ -3,21 +3,24 @@
 class ClassRegionTest
 {
     public:
-        // %reflect bm
+        // %<
         int mMemberA;
         int mMemberB;
-        // %reflect bm some name or other
+        // %>
         int mMemberC;
+
+        // %<>
+        // %<bm>
 
         /*
 
         stuff
 
-        %reflect bm CSTYLEREGION
+        %<CSTYLEREGION
 
         stuff
 
-        %reflect bm CSTYLEREGION
+        %>
 
         */
 };

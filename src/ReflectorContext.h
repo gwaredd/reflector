@@ -25,21 +25,33 @@ class ReflectorContext
 
         struct Bookmark
         {
-            Bookmark( StringRef n, const char* f, unsigned int l )
+            enum eType
+            {
+                kBookmark,
+                kRegionStart,
+                kRegionEnd
+            };
+
+            Bookmark( StringRef n, eType t, const char* f, unsigned int l )
                 : name( n )
+                , type( t )
                 , file( f )
                 , line( l )
             {}
 
             StringRef       name;
+            eType           type;
             const char*     file;
             unsigned int    line;
         };
 
     public:
 
+        static const char* const PITagHint;
         static const char* const PITag;
-        static const char* const ParentPITag;
+        static const char* const PITagParent;
+        static const char* const PITagBookmarkStart;
+        static const char* const PITagBookmarkEnd;
 
         ReflectorContext();
         void SetSourceManager( SourceManager* p ) { mpSourceManager = p; }

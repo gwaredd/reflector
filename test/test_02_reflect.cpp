@@ -152,19 +152,22 @@ namespace NS0
 class ClassBookmarkTest
 {
     public:
-        // %reflect bm
+        // %<>
         int mMemberA;
 
         int mMemberB;
 
-        // %reflect bm BOOKMARK_NAME
+        // %<BOOKMARK_NAME>
 
         int mMemberC;
 
         /*
 
-        %reflect bm CSTYLEREGION
+        %<CSTYLEREGION
 
+        stuff goes here
+
+        %>
         */
 };
 

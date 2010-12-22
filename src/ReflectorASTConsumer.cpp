@@ -593,6 +593,16 @@ void ReflectorASTConsumer::ReflectBookmarks()
             mWriter.SetAttribute( "name", itr->name.str().c_str() );
         }
 
+        // type
+        if( itr->type == ReflectorContext::Bookmark::kRegionStart )
+        {
+            mWriter.SetAttribute( "type", "region_start" );
+        }
+        else if( itr->type == ReflectorContext::Bookmark::kRegionEnd )
+        {
+            mWriter.SetAttribute( "type", "region_end" );
+        }
+
         // file
         if( itr->file )
         {

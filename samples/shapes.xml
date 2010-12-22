@@ -19,27 +19,28 @@
         <var name="pos" type="Vector" />
         <var name="radius" type="float" />
         <bookmark name="auto" file="shapes.h" line="39" />
-        <bookmark name="end" file="shapes.h" line="40" />
     </struct>
     <struct name="Plane">
         <parent name="Shape" access="public" />
         <var name="normal" type="Vector" />
         <var name="d" type="float" />
-        <bookmark name="auto" file="shapes.h" line="48" />
-        <bookmark name="end" file="shapes.h" line="49" />
+        <bookmark name="auto" type="region_start" file="shapes.h" line="47" />
+        <bookmark type="region_end" file="shapes.h" line="48" />
     </struct>
     <struct name="Line">
         <parent name="Shape" access="public" />
         <var name="pos" type="Vector" />
         <var name="dir" type="Vector" />
-        <bookmark name="auto" file="shapes.h" line="57" />
-        <bookmark name="end" file="shapes.h" line="58" />
+        <bookmark name="auto" file="shapes.h" line="56" />
     </struct>
     <struct name="Box">
         <parent name="Shape" access="public" />
         <var name="max" type="Vector" />
         <var name="min" type="Vector" />
-        <bookmark name="auto" file="shapes.h" line="66" />
-        <bookmark name="end" file="shapes.h" line="67" />
+        <bookmark name="auto" type="region_start" file="shapes.h" line="64" />
+        <function name="SomeFunction">
+            <return>void</return>
+        </function>
+        <bookmark type="region_end" file="shapes.h" line="66" />
     </struct>
 </reflector>
