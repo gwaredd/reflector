@@ -1,0 +1,45 @@
+<?xml version="1.0" ?>
+<reflector>
+    <struct name="Shape">
+        <var name="name" type="char *" />
+        <var name="colour" type="Colour" />
+        <function name="Create" qualifiers="static">
+            <return>Shape *</return>
+            <param name="name" type="const char *" />
+        </function>
+        <function name="Set">
+            <return>void</return>
+            <param name="" type="Shape *" />
+            <param name="name" type="const char *" />
+            <param name="value" type="const char *" />
+        </function>
+    </struct>
+    <struct name="Sphere">
+        <parent name="Shape" access="public" />
+        <var name="pos" type="Vector" />
+        <var name="radius" type="float" />
+        <bookmark name="auto" file="shapes.h" line="39" />
+        <bookmark name="end" file="shapes.h" line="40" />
+    </struct>
+    <struct name="Plane">
+        <parent name="Shape" access="public" />
+        <var name="normal" type="Vector" />
+        <var name="d" type="float" />
+        <bookmark name="auto" file="shapes.h" line="48" />
+        <bookmark name="end" file="shapes.h" line="49" />
+    </struct>
+    <struct name="Line">
+        <parent name="Shape" access="public" />
+        <var name="pos" type="Vector" />
+        <var name="dir" type="Vector" />
+        <bookmark name="auto" file="shapes.h" line="57" />
+        <bookmark name="end" file="shapes.h" line="58" />
+    </struct>
+    <struct name="Box">
+        <parent name="Shape" access="public" />
+        <var name="max" type="Vector" />
+        <var name="min" type="Vector" />
+        <bookmark name="auto" file="shapes.h" line="66" />
+        <bookmark name="end" file="shapes.h" line="67" />
+    </struct>
+</reflector>

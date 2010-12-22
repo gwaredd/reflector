@@ -1,0 +1,29 @@
+//////////////////////////////////////////////////////////////////////////
+// DO NOT EDIT - this is generated automatically
+
+namespace Type
+{
+    enum eType
+    {
+        kUnknown = -1,
+[% FOREACH node IN root.children() %]
+[% IF node.name() == "struct" OR node.name() == "class" %]
+        kType${node.attribute('name')},
+[% END %]
+[% END %]
+        kNumTypes
+    };
+
+    class Info
+    {
+        public:
+
+            eType type;
+
+            virtual const char* GetName() = 0;
+    }
+
+    Info* Get( eType );
+    Info* Get( const char* );
+}
+

@@ -1,0 +1,72 @@
+[% USE format %]
+//////////////////////////////////////////////////////////////////////////
+// DO NOT EDIT - this is generated automatically
+
+#include "hash.h"
+
+namespace Type {
+
+//////////////////////////////////////////////////////////////////////////
+[%
+#---------------------------------------------------------------------
+# class types
+#---------------------------------------------------------------------
+%]
+[% FOREACH node IN root.children() %]
+[% IF node.name() == "struct" OR node.name() == "class" %]
+[% SET name = node.attribute('name') %]
+
+// Type${name}
+
+class Type${name} : public Info
+{
+    public:
+        Type${name}() : type( kType${name} ) {}
+        virtual const char* GetName() { return "${name}" };
+}
+
+static Type${node.attribute('name')} s_type${node.attribute('name')};
+
+[% END %]
+[% END %]
+
+//////////////////////////////////////////////////////////////////////////
+[%
+#---------------------------------------------------------------------
+# type registry
+#---------------------------------------------------------------------
+%]
+
+static Info* s_types[ kNumTypes ] =
+{
+[% FOREACH node IN root.children() %]
+[% IF node.name() == "struct" OR node.name() == "class" %]
+    &s_type${node.attribute('name')},
+[% END %]
+[% END %]
+};
+
+Info* Get( eType type )
+{
+    return s_types[ type ];
+}
+
+Info* Get( const char* name )
+{
+    switch( Hash( name ) )
+    {
+[% align    = format('%-28s') %]
+[% hashfmt  = format('%08x') %]
+[% FOREACH node IN root.children() %]
+[% IF node.name() == "struct" OR node.name() == "class" %]
+[% SET name = node.attribute('name') %]
+[% SET entry = 's_types[ kType' _ name _' ];' %]
+        case 0x[% GET hashfmt( hash( name ) ) | upper %]: return [% align( entry ) %] // ${name}
+[% END %]
+[% END %]
+    }
+
+    return 0;
+}
+
+} // Type
