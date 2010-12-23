@@ -9,7 +9,7 @@
     <OutDir>$(Gw)out\$(Platform)\$(Configuration)\$(ProjectName)\</OutDir>
   </PropertyGroup>
   <PropertyGroup>
-    <IntDir>$(Gw)obj\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir>$(Gw)out\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
