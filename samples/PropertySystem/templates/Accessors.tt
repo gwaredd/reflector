@@ -1,0 +1,60 @@
+[%  #--------------------------------------------------------------------------------
+    # expand accessors
+%]
+[% USE format %]
+[% SET nl = "\n" %]
+[% fmt_return   = format('%-8s ') %]
+[% fmt_fn       = format('%-24s') %]
+$indent// %<accessors$nl
+[%  #--------------------------------------------------------------------------------
+    # Getters
+%]
+[% FOREACH var IN node.children() %]
+
+    [% UNLESS var.name == "var" %][% NEXT %][% END %]
+
+    [% type = var.attribute('type') %]
+    [% name = var.attribute('name') %]
+    [% Name = name | ucfirst %]
+
+    [% # %]$indent[% fmt_return( type _ '&' ) %] [% fmt_fn( 'Get' _ Name _ '()' ) %] { return $name; }$nl
+[% END %]
+$nl
+[%  #--------------------------------------------------------------------------------
+    # Setters
+%]
+[% FOREACH var IN node.children() %]
+
+    [% UNLESS var.name == "var" %][% NEXT %][% END %]
+
+    [% type = var.attribute('type') %]
+    [% name = var.attribute('name') %]
+    [% Name = name | ucfirst %]
+
+    [% min = '' %]
+    [% max = '' %]
+
+    [% FOREACH attr IN var.children() %]
+
+        [% UNLESS attr.name == "attribute" %][% NEXT %][% END %]
+
+        [% IF attr.attribute('name') == 'min' %]
+            [% min = attr.attribute('value') %]
+        [% ELSIF attr.attribute('name') == 'max' %]
+            [% max = attr.attribute('value') %]
+        [% END %]
+
+    [% END %]
+
+    [% set = 'v' %]
+    [% IF min != '' AND max != '' %]
+        [% set = "v < $min ? $min : (v > $max ? $max : v)" %]
+    [% ELSIF min != '' %]
+        [% set = "v < $min ? $min : v" %]
+    [% ELSIF max != '' %]
+        [% set = "v > $max ? $max : v" %]
+    [% END %]
+
+    [% # %]$indent[% fmt_return( 'void' ) %] [% fmt_fn( 'Set' _ Name _ '( ' _ type _ '& v )' ) %] { $name = $set; }$nl
+[% END %]
+$indent// %>$nl
