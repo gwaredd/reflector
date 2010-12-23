@@ -51,7 +51,13 @@ class Sphere : public RTTI::Impl<Sphere, Shape>
         Vector  pos;
         float   radius attr( "max=" STRINGIFY(WORLD_MAX) ";min=0.1f" );
 
-        // %<accessors>
+        // %<accessors
+        Vector&  GetPos()                 { return pos; }
+        float&   GetRadius()              { return radius; }
+
+        void     SetPos( Vector& v )      { pos = v; }
+        void     SetRadius( float& v )    { radius = v < 0.1f ? 0.1f : (v > 100.f ? 100.f : v); }
+        // %>
 };
 
 class Plane : public RTTI::Impl<Plane, Shape>
@@ -60,7 +66,13 @@ class Plane : public RTTI::Impl<Plane, Shape>
         Vector  normal;
         float   d attr( "max=" STRINGIFY(WORLD_MAX) ";min=" STRINGIFY(WORLD_MIN) );
 
-        // %<accessors>
+        // %<accessors
+        Vector&  GetNormal()              { return normal; }
+        float&   GetD()                   { return d; }
+
+        void     SetNormal( Vector& v )   { normal = v; }
+        void     SetD( float& v )         { d = v < -100.f ? -100.f : (v > 100.f ? 100.f : v); }
+        // %>
 };
 
 class Line : public RTTI::Impl<Line, Shape>
@@ -69,7 +81,13 @@ class Line : public RTTI::Impl<Line, Shape>
         Vector pos;
         Vector dir;
 
-        // %<accessors>
+        // %<accessors
+        Vector&  GetPos()                 { return pos; }
+        Vector&  GetDir()                 { return dir; }
+
+        void     SetPos( Vector& v )      { pos = v; }
+        void     SetDir( Vector& v )      { dir = v; }
+        // %>
 };
 
 class Box : public RTTI::Impl<Box, Shape>
@@ -78,6 +96,12 @@ class Box : public RTTI::Impl<Box, Shape>
         Vector max;
         Vector min;
 
-        // %<accessors>
+        // %<accessors
+        Vector&  GetMax()                 { return max; }
+        Vector&  GetMin()                 { return min; }
+
+        void     SetMax( Vector& v )      { max = v; }
+        void     SetMin( Vector& v )      { min = v; }
+        // %>
 };
 

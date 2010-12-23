@@ -59,6 +59,14 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PreBuildEvent>
+      <Command>tools\reflector.exe -std=c++98 src\shapes.h -o shapes.xml
+perl -Iscripts scripts\process_accessors.pl --xml=shapes.xml --replace
+</Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>Reflecting Shapes</Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -78,18 +86,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="scripts\process_shapes.pl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </None>
-    <None Include="scripts\process_template.pl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </None>
+    <None Include="scripts\process_accessors.pl" />
+    <None Include="scripts\process_template.pl" />
     <CustomBuild Include="templates\RTTI.cpp.tt">
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">perl -Iscripts scripts\process_template.pl --xml=shapes.xml --in=%(Identity) --out=src\%(Filename)
 </Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">src\%(Filename)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">shapes.xml</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Expanding Template</Message>
     </CustomBuild>
+    <None Include="templates\Accessors.tt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\RTTI.h" />

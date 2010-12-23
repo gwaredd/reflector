@@ -3,89 +3,75 @@
 
 use strict;
 
+use Template;
+use File::Copy;
 use XML::Parser;
 use XML::SimpleObject;
+use Getopt::Long;
+use Data::Dumper;
 
 our %g_bookmarks = ();
 
+our $g_tt = new Template({
+                            INTERPOLATE     => 1,
+                            PRE_CHOMP       => 1,
+                            POST_CHOMP      => 1,
+                            TRIM            => 0,
+                        }) or die $Template::ERROR, "\n";
+
+our $g_tmpl     = "templates/Accessors.tt";
+our $g_replace  = 0;
 
 ################################################################################
+# find a class or struct that has an "accessors" bookmark
 
 sub ExtractBookmarks
 {
     my $root = shift;
 
-    # walk tree and extract bookmarks
-
     foreach my $node ($root->children())
     {
         next unless $node->name eq "struct" or $node->name eq "class";
-        next unless $node->attribute('name') eq "";
 
-        foreach my $bm ( $node->children() )
+        foreach my $c ( $node->children() )
         {
-            next unless $bm->name eq "bookmark";
+            if( $c->name eq "bookmark" )
+            {
+                my $name = $c->attribute('name');
+                my $type = $c->attribute('type');
+                my $file = $c->attribute('file');
+                my $line = $c->attribute('line');
 
-            my $name = $bm->attribute('name');
-            my $type = $bm->attribute('type');
-            my $file = $bm->attribute('file');
-            my $line = $bm->attribute('line');
+                $name = "" unless $name;
+                $type = "" unless $type;
+                $file = "unknown" unless $file;
+                $line = -1 unless $file;
 
-            $name = "" unless $name;
-            $type = "" unless $type;
-            $file = "unknown" unless $file;
-            $line = -1 unless $file;
+                # only process <accessors> bookmarks (or end regions as they aren't named)
 
-            $g_bookmarks{$file} = [] unless $g_bookmarks{$file};
+                next unless $name eq "accessors" or $type eq "region_end";
 
-            push @{$g_bookmarks{$file}}, { line => $line, name => $name, type => $type, node => $node };
+                # add accessors bookmark to list
+
+                $g_bookmarks{$file} = [] unless $g_bookmarks{$file};
+                push @{$g_bookmarks{$file}}, { line => $line, name => $name, type => $type, node => $node };
+            }
         }
-    }
-
-#    # sort by line number
-#    # (probably unecessary as they will exist in order in the xml)
-#
-#    foreach my $k (keys %g_bookmarks)
-#    {
-#        my @s = sort { $a->{'line'} <=> $b->{'line'} } @{$g_bookmarks{$k}};;
-#    }
-}
 
 
-################################################################################
-
-sub ExpandNode
-{
-    my ( $fh, $indent, $node, $close ) = @_;
-
-    print $fh $indent."<%auto\n";
-
-    print $fh $indent."DECLARE_RTTI\n\n";
-
-    foreach my $var ($node->children())
-    {
-        next unless $var->name eq "var";
-
-        my $name = $var->attribute('name');
-        my $type = $var->attribute('type');
-
-        printf( $fh "%s%-10s Get%s();\n", $indent, "$type&", ucfirst($name) );
-        printf( $fh "%s%-10s Set%s( $type& );\n", $indent, "void", ucfirst($name) );
-    }
-
-    if( $close )
-    {
-        print $fh $indent."%>\n";
+        # TODO: remove accessors entries from XML within region
+        # TODO: remove vars that already have custom accessors
+        # ^--- this will require an XML parser that returns nodes in order they appear in the file, XML::SimpleObject doesn't :/
     }
 }
 
 
 ################################################################################
-#
+# open file and process bookmarked lines
 
-sub ProcessBookmarks
+sub ProcessFile
 {
-    my ($file, $bookmarks) = @_;
+    my ( $file, $bookmarks ) = @_;
 
     # get first bookmark in list
 
@@ -96,8 +82,10 @@ sub ProcessBookmarks
 
     my $skip = 0;
 
+    my $fileout = $file.".tmp";
+
     open( FIN,  "<$file" ) or die "Failed to open '$file'\n";
-    open( FOUT, ">$file.out" ) or die "Failed to open '$file.out'\n";
+    open( FOUT, ">$fileout" ) or die "Failed to open '$fileout'\n";
 
     while( <FIN> )
     {
@@ -105,29 +93,40 @@ sub ProcessBookmarks
 
         if( defined($bm) and $bm->{'line'} == $. )
         {
-            # what bookmark type is it?
-
             if( $bm->{'type'} eq "region_end" )
             {
-                print FOUT $_;
-                $skip = 0;
-            }
-            elsif( $bm->{'name'} eq "auto" )
-            {
-                my ($indent) = ($_ =~ m/^(\s+)/);
-
-                ExpandNode( *FOUT, $indent, $bm->{'node'}, $bm->{'type'} eq "region_start" ? 0 : 1 );
-
-                if( $bm->{'type'} eq "region_start" )
+                if( $skip )
                 {
-                    $skip = 1;
+                    $skip = 0;
+                }
+                else
+                {
+                    print FOUT $_;
                 }
             }
             else
             {
-                warn "Unknown bookmark type '$bm->{name}'\n";
-            }
+                if( $bm->{'type'} eq "region_start" )
+                {
+                    $skip = 1;
+                }
+                else
+                {
+                    $skip = 0;
+                }
 
+
+                # expand accessors template
+
+                my ($indent) = ($_ =~ m/^(\s+)/);
+
+                my %vars = (
+                        node    => $bm->{'node'},
+                        indent  => $indent,
+                    );
+
+                $g_tt->process( $g_tmpl, \%vars, \*FOUT, { binmode => 1 } ) or die $g_tt->error();
+            }
 
             # next bookmark
 
@@ -141,6 +140,17 @@ sub ProcessBookmarks
 
     close(FOUT);
     close(FIN);
+
+    # replace current file with output file
+
+    if( $g_replace )
+    {
+        my $filebak = "$file.bak";
+
+        unlink $filebak if -f $filebak;
+        move( $file, $filebak );
+        move( $fileout, $file );
+    }
 }
 
 
@@ -152,23 +162,18 @@ sub Main
     # read command line
 
     my $xml = "";
-    my $in  = "";
-    my $out = "";
 
     GetOptions( 
-        "xml=s" => \$xml,
-        "in=s"  => \$in,
-        "out=s" => \$out,
+        "xml=s"     => \$xml,
+        "replace"   => \$g_replace,
     );
 
-    die "Usage: perl $0 --xml=<xml> --in=<in> --out=<out>\n" unless $xml and $in and $out;
+    die "Usage: perl $0 --xml=<xml>\n" unless $xml;
 
     # load xml
 
-    print "Loading '$xml'\n";
-
     my $parser  = new XML::Parser( ErrorContext => 2, Style => "Tree" );
-    my $xso     = new XML::SimpleObject( $parser->parsefile( $g_xml ) );
+    my $xso     = new XML::SimpleObject( $parser->parsefile( $xml ) );
     my $root    = $xso->child( 'reflector' ) or die "Not a reflector file\n";
 
 
@@ -179,7 +184,8 @@ sub Main
 
     while( my( $file, $bookmarks ) = each %g_bookmarks )
     {
-        ProcessBookmarks( $file, $bookmarks );
+        print "Processing '$file'\n";
+        ProcessFile( $file, $bookmarks );
     }
 }
 

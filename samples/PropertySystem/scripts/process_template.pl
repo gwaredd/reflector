@@ -43,9 +43,11 @@ sub Main
         "out=s" => \$out,
     );
 
-    die "Usage: perl process_template.pl --xml=<xml> --in=<in> --out=<out>\n" unless $xml and $in and $out;
+    die "Usage: perl $0 --xml=<xml> --in=<in> --out=<out>\n" unless $xml and $in and $out;
 
     # load xml
+
+    print "Loading '$xml'\n";
 
     my $parser  = new XML::Parser( ErrorContext => 2, Style => "Tree" );
     my $xso     = new XML::SimpleObject( $parser->parsefile( $xml ) );

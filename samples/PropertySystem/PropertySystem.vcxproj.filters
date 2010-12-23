@@ -12,11 +12,14 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="scripts\process_shapes.pl">
-      <Filter>scripts</Filter>
-    </None>
     <None Include="scripts\process_template.pl">
       <Filter>scripts</Filter>
+    </None>
+    <None Include="scripts\process_accessors.pl">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="templates\Accessors.tt">
+      <Filter>templates</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

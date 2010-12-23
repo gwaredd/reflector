@@ -10,7 +10,22 @@
             <attribute name="max" value="100.f" />
             <attribute name="min" value="0.1f" />
         </var>
-        <bookmark name="accessors" file="src\Shapes.h" line="52" />
+        <bookmark name="accessors" type="region_start" file="src\shapes.h" line="54" />
+        <function name="GetPos">
+            <return>Vector &amp;</return>
+        </function>
+        <function name="GetRadius">
+            <return>float &amp;</return>
+        </function>
+        <function name="SetPos">
+            <return>void</return>
+            <param name="v" type="Vector &amp;" />
+        </function>
+        <function name="SetRadius">
+            <return>void</return>
+            <param name="v" type="float &amp;" />
+        </function>
+        <bookmark type="region_end" file="src\shapes.h" line="60" />
     </class>
     <class name="Plane">
         <parent name="Impl" access="public">
@@ -22,7 +37,22 @@
             <attribute name="max" value="100.f" />
             <attribute name="min" value="-100.f" />
         </var>
-        <bookmark name="accessors" file="src\Shapes.h" line="61" />
+        <bookmark name="accessors" type="region_start" file="src\shapes.h" line="69" />
+        <function name="GetNormal">
+            <return>Vector &amp;</return>
+        </function>
+        <function name="GetD">
+            <return>float &amp;</return>
+        </function>
+        <function name="SetNormal">
+            <return>void</return>
+            <param name="v" type="Vector &amp;" />
+        </function>
+        <function name="SetD">
+            <return>void</return>
+            <param name="v" type="float &amp;" />
+        </function>
+        <bookmark type="region_end" file="src\shapes.h" line="75" />
     </class>
     <class name="Line">
         <parent name="Impl" access="public">
@@ -31,7 +61,22 @@
         </parent>
         <var name="pos" type="Vector" />
         <var name="dir" type="Vector" />
-        <bookmark name="accessors" file="src\Shapes.h" line="70" />
+        <bookmark name="accessors" type="region_start" file="src\shapes.h" line="84" />
+        <function name="GetPos">
+            <return>Vector &amp;</return>
+        </function>
+        <function name="GetDir">
+            <return>Vector &amp;</return>
+        </function>
+        <function name="SetPos">
+            <return>void</return>
+            <param name="v" type="Vector &amp;" />
+        </function>
+        <function name="SetDir">
+            <return>void</return>
+            <param name="v" type="Vector &amp;" />
+        </function>
+        <bookmark type="region_end" file="src\shapes.h" line="90" />
     </class>
     <class name="Box">
         <parent name="Impl" access="public">
@@ -40,6 +85,21 @@
         </parent>
         <var name="max" type="Vector" />
         <var name="min" type="Vector" />
-        <bookmark name="accessors" file="src\Shapes.h" line="79" />
+        <bookmark name="accessors" type="region_start" file="src\shapes.h" line="99" />
+        <function name="GetMax">
+            <return>Vector &amp;</return>
+        </function>
+        <function name="GetMin">
+            <return>Vector &amp;</return>
+        </function>
+        <function name="SetMax">
+            <return>void</return>
+            <param name="v" type="Vector &amp;" />
+        </function>
+        <function name="SetMin">
+            <return>void</return>
+            <param name="v" type="Vector &amp;" />
+        </function>
+        <bookmark type="region_end" file="src\shapes.h" line="105" />
     </class>
 </reflector>
