@@ -1,0 +1,45 @@
+<?xml version="1.0" ?>
+<reflector>
+    <class name="Sphere">
+        <parent name="Impl" access="public">
+            <template_argument type="Sphere" />
+            <template_argument type="Shape" />
+        </parent>
+        <var name="pos" type="Vector" />
+        <var name="radius" type="float">
+            <attribute name="max" value="100.f" />
+            <attribute name="min" value="0.1f" />
+        </var>
+        <bookmark name="accessors" file="src\Shapes.h" line="52" />
+    </class>
+    <class name="Plane">
+        <parent name="Impl" access="public">
+            <template_argument type="Plane" />
+            <template_argument type="Shape" />
+        </parent>
+        <var name="normal" type="Vector" />
+        <var name="d" type="float">
+            <attribute name="max" value="100.f" />
+            <attribute name="min" value="-100.f" />
+        </var>
+        <bookmark name="accessors" file="src\Shapes.h" line="61" />
+    </class>
+    <class name="Line">
+        <parent name="Impl" access="public">
+            <template_argument type="Line" />
+            <template_argument type="Shape" />
+        </parent>
+        <var name="pos" type="Vector" />
+        <var name="dir" type="Vector" />
+        <bookmark name="accessors" file="src\Shapes.h" line="70" />
+    </class>
+    <class name="Box">
+        <parent name="Impl" access="public">
+            <template_argument type="Box" />
+            <template_argument type="Shape" />
+        </parent>
+        <var name="max" type="Vector" />
+        <var name="min" type="Vector" />
+        <bookmark name="accessors" file="src\Shapes.h" line="79" />
+    </class>
+</reflector>
