@@ -81,21 +81,21 @@ Reflector Commands
     commands are 
     
         write FQN           write "fully qualified name" with declaration
-        write namespace     write namespace with declaration (enabled by default)
+        write namespace     write namespace with declaration (default)
         write access        write access specifier (public/protected/private) with declaration
         write location      write source file and line number with declaration
 
-        inherit             child classes will inherit parent reflection properties (enabled by default)
-        explicit            declarations must be explicitly marked up
-        no                  invert option (or don't reflect if on own)
-        ignore              ignore this declaration
+        inherit             child classes will inherit parent reflection properties (default)
+        explicit            internal declarations must be explicitly tagged for export
+        no                  invert option (or don't reflect if on own - same as ignore)
+        ignore              ignore this declaration (same as 'no')
         operators           export operators (e.g. +,-,[],etc, false by default)
         
         access [public|private|protected] set access level to export (public by default)
         
         attribute [k=v[;k=v]]   add metadata to declaration, e.g. attribute min=3;max=10
 
-        debug               turn on debug
+        debug               turn on debug output
 
     bookmarks
 
@@ -104,7 +104,15 @@ Reflector Commands
 
         // %<[name][>]
         // %>               end region
-
+        
+        e.g.
+        
+        // %<>
+        // %<my bookmark>
+        
+        // %<my_region
+        int stuff_goes_here;
+        // %>
     
 
 Compiling
