@@ -56,6 +56,13 @@ using namespace llvm;
 #define rfNAME      "reflector"
 #define rfVERSION   "1.0"
 
+#ifdef _DEBUG
+    #include <assert.h>
+    #define ASSERT assert
+#else
+    #define ASSERT(x)
+#endif
+
 
 //////////////////////////////////////////////////////////////////////////
 #endif // Reflector_h

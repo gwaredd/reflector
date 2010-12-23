@@ -165,7 +165,15 @@ void ReflectorContext::ProcessCommands( StringRef strRemaining, SourceLocation& 
         // "pop" next line off of the string
         StringRef curLine = _GetNextLine( strRemaining, lineOffset );
 
-        // does the current line start with a PI tag ([%]%reflect, %< or %>)?
+        // found bookmarks, %< or %> ?
+
+        if( curLine.startswith( PITagBookmarkStart ) || curLine.startswith( PITagBookmarkEnd ) )
+        {
+            ProcessBookmark( curLine, loc, lineOffset );
+            continue;
+        }
+
+        // for PI tag, %reflect or %%reflect?
 
         State* pState  = &CurrentState();
         State* pParent = NULL;
@@ -177,11 +185,6 @@ void ReflectorContext::ProcessCommands( StringRef strRemaining, SourceLocation& 
         else if( curLine.startswith( PITag ) )
         {
             pParent = NULL;
-        }
-        else if( curLine.startswith( PITagBookmarkStart ) || curLine.startswith( PITagBookmarkEnd ) )
-        {
-            ProcessBookmark( curLine, loc, lineOffset );
-            continue;
         }
         else
         {
@@ -485,15 +488,40 @@ void ReflectorContext::SetAttribute( StringRef opt )
 }
 
 //////////////////////////////////////////////////////////////////////////
+
+void ReflectorContext::PushComment( SourceRange& r )
+{
+    FileID fid = mpSourceManager->getFileID( r.getBegin() );
+    mCommentMap[ fid ].push( r );
+}
+
+//////////////////////////////////////////////////////////////////////////
 // process all instructions before the given source location
 
 void ReflectorContext::PopComments( SourceLocation& loc, bool process )
 {
-    while( ! mPIQueue.empty() )
+    // get the comment queue for this file
+
+    FileID fid = mpSourceManager->getFileID( loc );
+
+    CommentMap::iterator itr = mCommentMap.find( fid );
+
+    if( itr == mCommentMap.end() )
+    {
+        return;
+    }
+
+    // process comments
+
+    CommentQueue& q = mCommentMap[ fid ];
+
+    while( ! q.empty() )
     {
         // get first PI in queue
 
-        SourceRange comment = mPIQueue.front();
+        SourceRange comment = q.front();
+
+        ASSERT( mpSourceManager->getFileID( comment.getBegin() ) == fid );
 
         // if PI exists before the reference location
 
@@ -504,10 +532,11 @@ void ReflectorContext::PopComments( SourceLocation& loc, bool process )
                 const char* pStart  = mpSourceManager->getCharacterData( comment.getBegin() );
                 const char* pEnd    = mpSourceManager->getCharacterData( comment.getEnd() );
 
-                ProcessCommands( StringRef( pStart, pEnd - pStart ), comment.getBegin() );
+                StringRef txt = StringRef( pStart, pEnd - pStart );
+                ProcessCommands( txt, comment.getBegin() );
             }
 
-            mPIQueue.pop();
+            q.pop();
         }
         else
         {

@@ -57,7 +57,7 @@ class ReflectorContext
         void SetSourceManager( SourceManager* p ) { mpSourceManager = p; }
 
         // queue processing instructions
-        void PushComment( SourceRange& r )  { mPIQueue.push( r ); }
+        void PushComment( SourceRange& r );
         void PopComments( SourceLocation&, bool process = true );
 
         // state management
@@ -128,8 +128,11 @@ class ReflectorContext
 
         enum { kBufferSize = 128 };
 
+        typedef std::queue<SourceRange> CommentQueue;
+        typedef std::map<FileID,CommentQueue> CommentMap;
+
         SourceManager*              mpSourceManager;
-        std::queue<SourceRange>     mPIQueue;
+        CommentMap                  mCommentMap;
         std::vector<State>          mStateStack;
         std::map<std::string,State> mClassesFound;
         char                        mBuffer[ kBufferSize ];
