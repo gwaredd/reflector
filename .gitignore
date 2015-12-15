@@ -1,0 +1,15 @@
+out
+node_modules
+_ref
+
+thirdparty
+llvm
+build
+src
+
+# tools
+
+**.vcxproj.user
+**.suo
+**.xcodeproj
+
