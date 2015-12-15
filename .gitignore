@@ -5,11 +5,11 @@ _ref
 thirdparty
 llvm
 build
-src
+src/playground
 
 # tools
 
-**.vcxproj.user
 **.suo
 **.xcodeproj
+**.vcxproj.*
 
