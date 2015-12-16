@@ -1,88 +1,108 @@
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <sstream>
-#include <string>
-
-#include "clang/AST/AST.h"
-#include "clang/AST/ASTConsumer.h"
-#include "clang/AST/RecursiveASTVisitor.h"
-#include "clang/AST/Comment.h"
-#include "clang/Lex/Preprocessor.h"
-#include "clang/Frontend/ASTConsumers.h"
-#include "clang/Frontend/FrontendActions.h"
-#include "clang/Frontend/CompilerInstance.h"
-#include "clang/Tooling/CommonOptionsParser.h"
-#include "clang/Tooling/Tooling.h"
-#include "llvm/Support/raw_ostream.h"
-
-
-using namespace llvm;
-using namespace clang;
-using namespace clang::driver;
-using namespace clang::tooling;
+#include "Reflector.h"
 
 
 ////////////////////////////////////////////////////////////////////////////////
+
+class ReflectVisitor : public RecursiveASTVisitor< ReflectVisitor >
+{
+    public:
+
+        bool VisitEnumDecl( EnumDecl* d )
+        {
+            mWriter.WriteDecl( d );
+            return true;
+        }
+
+        bool VisitCXXRecordDecl( CXXRecordDecl* d )
+        {
+            mWriter.WriteDecl( d );
+            return true;
+        }
+
+    protected:
+
+        ReflectOutput& mWriter;
+
+    public:
+
+        ReflectVisitor( ReflectOutput& writer )
+            : mWriter( writer )
+        {
+        }
+};
+
+
+////////////////////////////////////////////////////////////////////////////////
+// AST consumer - handle interesting declarations in the source
 
 class ReflectASTConsumer : public ASTConsumer
 {
     public:
 
-        ReflectASTConsumer( CompilerInstance& CI )
-            : mCI( CI )
+        virtual bool HandleTopLevelDecl( DeclGroupRef group ) override
         {
+            for( auto itr = group.begin(); itr != group.end(); ++itr )
+            {
+                // if this decl is a reflectable type ...
+
+                auto tagDecl = dyn_cast<TagDecl>( *itr );
+
+                if( tagDecl== nullptr )
+                {
+                    continue;
+                }
+
+                // should we reflect it?
+
+                mReflect.SetDefault( false );
+
+                if( mReflect.ParseComment( mContext->getCommentForDecl( tagDecl, nullptr ) ) == false )
+                {
+                    continue;
+                }
+
+                // recursively write it out decl and all contained types
+
+                mReflect.SetDefault( true );
+                mVisitor.TraverseDecl( tagDecl );
+            }
+
+            return true;
         }
+
+
+        // keep hold of context as we need it for getCommentForDecl
 
         virtual void Initialize( ASTContext& Context ) override
         {
             mContext = &Context;
+            mWriter.SetContext(  mContext );
         }
 
-
-        virtual void HandleTagDeclDefinition( TagDecl* D ) override
-        {
-            auto name   = D->getKindName();
-            auto range  = D->getSourceRange();
-            auto loc    = range.getBegin();
-
-            llvm::outs() << name << "\n";
-            // llvm::outs() << loc.printToString( mCI.getSourceManager() ) << "\n";
-
-            // const char* start = sourceManager.getCharacterData( range.getBegin() );
-            // const char* end   = sourceManager.getCharacterData( range.getEnd() );
-            // llvm::outs() << std::string( start, end - start ) << "\n";
-
-            auto comment = mContext->getCommentForDecl( D, &mCI.getPreprocessor() );
-
-            if( comment )
-            {
-                llvm::outs() << "has comment\n";
-
-                for( auto itr = comment->child_begin(); itr != comment->child_end(); ++itr )
-                {
-                    auto c = *itr;
-                    llvm::outs() << c->getCommentKindName() << "\n";
-                    c->dump();
-
-                    const char* start = mCI.getSourceManager().getCharacterData( c->getLocStart() );
-                    const char* end   = mCI.getSourceManager().getCharacterData( c->getLocEnd() ) + 1;
-                    llvm::outs() << std::string( start, end - start ) << "\n";
-
-                    // llvm::outs() << c->getCommentKindName() << "\n";
-                    // getText().str();
-
-                }
-            }
-        }
 
     protected:
 
-        ASTContext*         mContext;
-        CompilerInstance&   mCI;
+        ReflectContext  mReflect;
+        ReflectOutput   mWriter;
+        ReflectVisitor  mVisitor;
+        ASTContext*     mContext;
+
+
+    public:
+
+        ReflectASTConsumer( JSON& json, CompilerInstance& CI )
+            : mWriter( json, CI )
+            , mVisitor( mWriter )
+            , mContext( nullptr )
+        {
+        }
 };
 
 
 ////////////////////////////////////////////////////////////////////////////////
+// front end action - invoked for every file processed
 
 class ReflectFrontendAction : public ASTFrontendAction
 {
@@ -92,12 +112,20 @@ class ReflectFrontendAction : public ASTFrontendAction
         {
             llvm::errs() << "Processing '" << file << "'\n";
 
-            // void Preprocessor::addCommentHandler (   CommentHandler *    Handler )
-
-            // CI.getPreprocessor().SetCommentRetentionState( true, false );
-
-            return make_unique< ReflectASTConsumer >( CI );
+            mJSON.BeginArray();
+            return make_unique< ReflectASTConsumer >( mJSON, CI );
         }
+
+        virtual void EndSourceFileAction() override
+        {
+            mJSON.EndArray();
+            llvm::outs() << "\n";
+        }
+
+    protected:
+
+        JSON mJSON;
+
 };
 
 
@@ -105,18 +133,28 @@ class ReflectFrontendAction : public ASTFrontendAction
 
 int main( int argc, const char* argv[] )
 {
-    cl::OptionCategory Options( "Extras" );
+    // parse command line
+
+    cl::OptionCategory  Options( "Extras" );
+    cl::opt<bool>       ShowErrors( "show-errors", cl::cat( Options ) );
+
     cl::extrahelp CommonHelp( CommonOptionsParser::HelpMessage );
 
     CommonOptionsParser op( argc, argv, Options );
 
+
+    // create tool
+
     ClangTool Tool( op.getCompilations(), op.getSourcePathList() );
 
-    // clang::CommentOptions::ParseAllComments = true;
+    if( ShowErrors.getValue() == false )
+    {
+        IgnoringDiagConsumer diagConsumer; // turn off error diagnostics
+        Tool.setDiagnosticConsumer( &diagConsumer );
+    }
 
-    // turn off errors
-    IgnoringDiagConsumer diagConsumer;
-    Tool.setDiagnosticConsumer( &diagConsumer );
+
+    // run
 
     return Tool.run( newFrontendActionFactory< ReflectFrontendAction >().get() );
 }

@@ -1,35 +1,145 @@
+////////////////////////////////////////////////////////////////////////////////
+// tests - data types, reflection stuff
+
+// #include <vector>
+
+
 int a = 0;
 int b = 2;
 
-/**
 
-    hello
-    world
-
-*/
-
-class SomeClass
+void F()
 {
-public:
-    float mA;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+// classes
+
+struct Vector3
+{
+    float x,y,z;
 };
 
 
-/// %some struct
+///%%!
 
-class Fish {}; // xxx
-
-struct SomeStruct
+class AClass
 {
-    float x;
-    float y;
-    float z;
+    public:
+
+        float a;
+        const float* b;
+
+        std::vector< int > v;
+        char buffer[ 32 ];
+
+        void SomeFunc( int a )
+        {
+        }
+
+        Vector3 v3;
+        Vector3* pv3;
+        Vector3& rv3;
+
+        virtual void AnotherFunc() = 0;
+
+    protected:
+
+        float c;
+
+    private:
+
+        float d;
+
+        AClass()
+        {
+        }
 };
 
-enum Enum
+// enums
+
+///%%!
+
+enum MyEnum
 {
-    One,
-    Two,
-    Three
+    One,Two,Three
+}
+
+///%%
+
+class ClassWithEnum
+{
+    public:
+
+        /// %%
+
+        enum ClassEnum
+        {
+            One,Two = 5,Three
+        }
+
+        ClassEnum x;
+
 };
+
+////////////////////////////////////////////////////////////////////////////////
+// namespaces
+
+namespace NS
+{
+    /// %%!
+
+    class NSClass
+    {
+        public:
+            float a;
+
+    };
+}
+
+using namespace NS;
+
+
+/// %%!
+
+class NSRef
+{
+    public:
+        NSClass nsc;
+};
+
+
+////////////////////////////////////////////////////////////////////////////////
+// subclasses
+
+
+///%
+
+struct MyClass
+{
+    float f;
+
+    class SubClass
+    {
+        public:
+
+            int a;
+
+    };
+
+    SubClass sc;
+};
+
+// inheritance
+
+// enums
+
+
+////////////////////////////////////////////////////////////////////////////////
+// reflection
+
+// %key=value, ...
+// %!
+// % -- comment
 
