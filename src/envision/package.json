@@ -1,0 +1,15 @@
+{
+  "name": "envision",
+  "version": "1.0.0",
+  "description": "convert reflected classes into RTTI code",
+  "main": "envision.coffee",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Gwaredd",
+  "license": "MIT",
+  "dependencies": {
+    "colors": "^1.1.2",
+    "dot": "^1.0.3"
+  }
+}

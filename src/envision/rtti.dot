@@ -1,0 +1,47 @@
+////////////////////////////////////////////////////////////////////////////////
+//
+// This file has been auto-genertated
+//
+//  source  : {{= it.file }}
+//  date    :
+//
+////////////////////////////////////////////////////////////////////////////////
+
+#include "gw/gw.h"
+#include "gw/gwRTTI.h"
+
+// TODO: attrs, bases
+
+using namespace gw::RTTI;
+{{# def.rtti }}
+////////////////////////////////////////////////////////////////////////////////
+// common types
+
+gwRTTI_REGISTER( bool );
+gwRTTI_REGISTER( char );
+gwRTTI_REGISTER( unsigned char );
+gwRTTI_REGISTER( short );
+gwRTTI_REGISTER( int );
+gwRTTI_REGISTER( unsigned int );
+gwRTTI_REGISTER( float );
+gwRTTI_REGISTER( double );
+
+{{~ it.classes : decl }}
+////////////////////////////////////////////////////////////////////////////////
+// {{= decl.name }}
+
+template<> void TypeInfoImpl< {{= decl.name }} >::Create()
+{{
+{? decl.type == 'enum' }}
+    {{# def.attrs:{decl:decl, name:"attrs", prefix:""} }}
+    {{# def.enum }}
+{{??}}
+    {{# def.inherits }}
+    {{# def.attrs:{decl:decl, name:"attrs", prefix:""} }}
+    {{# def.fields }}
+{{?}}
+}
+
+gwRTTI_REGISTER( {{= decl.name }} );
+
+{{~}}

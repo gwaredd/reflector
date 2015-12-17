@@ -1,0 +1,423 @@
+[
+    {
+        "type": "class",
+        "name": "AClass",
+        "location": "/Users/gwaredd/Dropbox/Dev/Reflector/tests/test.cpp:26:1",
+        "fields":
+        [
+            {
+                "name": "a",
+                "type": "float",
+                "access": "public"
+            },
+            {
+                "name": "b",
+                "type": "const float *",
+                "access": "public"
+            },
+            {
+                "name": "buffer",
+                "type": "char [32]",
+                "access": "public"
+            },
+            {
+                "name": "v3",
+                "type": "Vector3",
+                "access": "public"
+            },
+            {
+                "name": "pv3",
+                "type": "Vector3 *",
+                "access": "public"
+            },
+            {
+                "name": "rv3",
+                "type": "Vector3 &",
+                "access": "public"
+            },
+            {
+                "name": "c",
+                "type": "float",
+                "access": "protected"
+            },
+            {
+                "name": "d",
+                "type": "float",
+                "access": "private"
+            }
+        ]
+    },
+    {
+        "type": "enum",
+        "name": "MyEnum",
+        "location": "/Users/gwaredd/Dropbox/Dev/Reflector/tests/test.cpp:68:1",
+        "constants":
+        [
+            {
+                "name": "One",
+                "value": "0"
+            },
+            {
+                "name": "Two",
+                "value": "1"
+            },
+            {
+                "name": "Three",
+                "value": "2"
+            }
+        ]
+    },
+    {
+        "type": "class",
+        "name": "ClassWithEnum",
+        "location": "/Users/gwaredd/Dropbox/Dev/Reflector/tests/test.cpp:75:1",
+        "fields":
+        [
+            {
+                "name": "x",
+                "type": "ClassWithEnum::ClassEnum",
+                "access": "public"
+            }
+        ]
+    },
+    {
+        "type": "enum",
+        "name": "ClassWithEnum::ClassEnum",
+        "location": "/Users/gwaredd/Dropbox/Dev/Reflector/tests/test.cpp:81:9",
+        "constants":
+        [
+            {
+                "name": "One",
+                "value": "0"
+            },
+            {
+                "name": "Two",
+                "value": "5"
+            },
+            {
+                "name": "Three",
+                "value": "6"
+            }
+        ]
+    },
+    {
+        "type": "class",
+        "name": "NSRef",
+        "location": "/Users/gwaredd/Dropbox/Dev/Reflector/tests/test.cpp:110:1",
+        "fields":
+        [
+            {
+                "name": "nsc",
+                "type": "NS::NSClass",
+                "access": "public"
+            }
+        ]
+    },
+    {
+        "type": "struct",
+        "name": "MyStruct",
+        "location": "/Users/gwaredd/Dropbox/Dev/Reflector/tests/test.cpp:123:1",
+        "fields":
+        [
+            {
+                "name": "f",
+                "type": "float",
+                "access": "public"
+            },
+            {
+                "name": "sc",
+                "type": "MyStruct::SubClass",
+                "access": "public"
+            }
+        ]
+    },
+    {
+        "type": "class",
+        "name": "MyStruct::SubClass",
+        "location": "/Users/gwaredd/Dropbox/Dev/Reflector/tests/test.cpp:127:5",
+        "fields":
+        [
+            {
+                "name": "a",
+                "type": "int",
+                "access": "public"
+            }
+        ]
+    },
+    {
+        "type": "class",
+        "name": "Attrs",
+        "location": "/Users/gwaredd/Dropbox/Dev/Reflector/tests/test.cpp:155:1",
+        "attrs": {
+            "type": "class",
+            "attr1": "a",
+            "attr2": "b",
+            "attr3": "c",
+            "attr4": "d",
+            "attr5": "x=y etc",
+            "attr 6 with space": " hello world "
+        },
+        "fields":
+        [
+            {
+                "name": "a",
+                "type": "float",
+                "access": "public",
+                "attrs": {
+                    "type": "field",
+                    "attr1": "a",
+                    "attr2": "b",
+                    "attr3": "c",
+                    "attr4-fish ! $ ": "d",
+                    "attr5": "x=y etc",
+                    "attr 6 with space": " hello world "
+                }
+            },
+            {
+                "name": "b",
+                "type": "float",
+                "access": "public"
+            },
+            {
+                "name": "butd",
+                "type": "float",
+                "access": "public"
+            },
+            {
+                "name": "e",
+                "type": "float",
+                "access": "public",
+                "attrs": {
+                    "name": "value"
+                }
+            }
+        ]
+    },
+    {
+        "type": "class",
+        "name": "MultilineAttr",
+        "location": "/Users/gwaredd/Dropbox/Dev/Reflector/tests/test.cpp:176:1",
+        "attrs": {
+            "type": "class",
+            "attr1": "a",
+            "attr2": "b",
+            "attr3": "c"
+        },
+        "fields":
+        [
+        ]
+    },
+    {
+        "type": "enum",
+        "name": "EnumAttr",
+        "location": "/Users/gwaredd/Dropbox/Dev/Reflector/tests/test.cpp:183:1",
+        "attrs": {
+            "x": "y"
+        },
+        "constants":
+        [
+            {
+                "name": "EA_One",
+                "value": "0"
+            },
+            {
+                "name": "EA_Two",
+                "value": "1"
+            },
+            {
+                "name": "EA_Four",
+                "value": "3"
+            },
+            {
+                "name": "EA_Five",
+                "value": "4",
+                "attrs": {
+                    "a": "b",
+                    "c": "d"
+                }
+            }
+        ]
+    },
+    {
+        "type": "class",
+        "name": "A",
+        "location": "/Users/gwaredd/Dropbox/Dev/Reflector/tests/test.cpp:200:1",
+        "attrs": {
+            "a": "b"
+        },
+        "fields":
+        [
+            {
+                "name": "mA",
+                "type": "float",
+                "access": "public"
+            }
+        ]
+    },
+    {
+        "type": "class",
+        "name": "B",
+        "location": "/Users/gwaredd/Dropbox/Dev/Reflector/tests/test.cpp:205:1",
+        "attrs": {
+            "a": "b"
+        },
+        "inherits":
+        [
+            {
+                "type": "A",
+                "access": "public"
+            }
+        ],
+        "fields":
+        [
+            {
+                "name": "mB",
+                "type": "float",
+                "access": "public"
+            }
+        ]
+    },
+    {
+        "type": "class",
+        "name": "C",
+        "location": "/Users/gwaredd/Dropbox/Dev/Reflector/tests/test.cpp:212:1",
+        "inherits":
+        [
+            {
+                "type": "B",
+                "access": "public"
+            }
+        ],
+        "fields":
+        [
+            {
+                "name": "mC",
+                "type": "float",
+                "access": "public"
+            }
+        ]
+    },
+    {
+        "type": "class",
+        "name": "Base",
+        "location": "/Users/gwaredd/Dropbox/Dev/Reflector/tests/test.cpp:220:1",
+        "fields":
+        [
+        ]
+    },
+    {
+        "type": "class",
+        "name": "C1",
+        "location": "/Users/gwaredd/Dropbox/Dev/Reflector/tests/test.cpp:224:1",
+        "inherits":
+        [
+            {
+                "type": "Base",
+                "access": "public"
+            }
+        ],
+        "fields":
+        [
+        ]
+    },
+    {
+        "type": "class",
+        "name": "C2",
+        "location": "/Users/gwaredd/Dropbox/Dev/Reflector/tests/test.cpp:228:1",
+        "inherits":
+        [
+            {
+                "type": "Base",
+                "access": "public"
+            }
+        ],
+        "fields":
+        [
+        ]
+    },
+    {
+        "type": "class",
+        "name": "D",
+        "location": "/Users/gwaredd/Dropbox/Dev/Reflector/tests/test.cpp:232:1",
+        "inherits":
+        [
+            {
+                "type": "C1",
+                "access": "public"
+            },
+            {
+                "type": "C2",
+                "access": "public"
+            }
+        ],
+        "fields":
+        [
+        ]
+    },
+    {
+        "type": "class",
+        "name": "E",
+        "location": "/Users/gwaredd/Dropbox/Dev/Reflector/tests/test.cpp:236:1",
+        "inherits":
+        [
+            {
+                "type": "D",
+                "access": "public"
+            }
+        ],
+        "fields":
+        [
+        ]
+    },
+    {
+        "type": "class",
+        "name": "V1",
+        "location": "/Users/gwaredd/Dropbox/Dev/Reflector/tests/test.cpp:243:1",
+        "inherits":
+        [
+            {
+                "type": "Base",
+                "access": "public",
+                "virtual": "true"
+            }
+        ],
+        "fields":
+        [
+        ]
+    },
+    {
+        "type": "class",
+        "name": "V2",
+        "location": "/Users/gwaredd/Dropbox/Dev/Reflector/tests/test.cpp:247:1",
+        "inherits":
+        [
+            {
+                "type": "Base",
+                "access": "public",
+                "virtual": "true"
+            }
+        ],
+        "fields":
+        [
+        ]
+    },
+    {
+        "type": "class",
+        "name": "D2",
+        "location": "/Users/gwaredd/Dropbox/Dev/Reflector/tests/test.cpp:251:1",
+        "inherits":
+        [
+            {
+                "type": "V1",
+                "access": "public"
+            },
+            {
+                "type": "V2",
+                "access": "public"
+            }
+        ],
+        "fields":
+        [
+        ]
+    }
+]

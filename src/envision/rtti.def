@@ -1,0 +1,54 @@
+{{## def.attrs:p:
+
+{{ var keys = p.decl.attrs ? Object.keys( p.decl.attrs ) : null; }}
+
+{{? keys }}
+    static Attr {{= p.name }}[ {{= keys.length }} ];
+    {{~ keys : key:ki }}
+    {{= p.name }}[{{= ki }}].Key     = "{{= key }}";
+    {{= p.name }}[{{= ki }}].Value   = "{{= p.decl.attrs[ key ] }}";
+    {{~}}
+    {{? p.prefix }}{{= p.prefix }}.{{?}}Attrs       = {{= p.name }};
+    {{? p.prefix }}{{= p.prefix }}.{{?}}NumAttrs    = {{= keys.length }};
+{{?}}
+
+#}}
+
+
+{{## def.enum:
+    {{? decl.constants && decl.constants.length }}
+    Constant e[ {{= decl.constants.length }} ];
+        {{~ decl.constants : e:i }}
+    e[{{=i}}].Name  = "{{= e.name }}";
+    e[{{=i}}].Value = {{= e.value }};
+    // attrs?
+        {{~}}
+    {{?}}
+    Constants       = e;
+    NumConstants    = {{= decl.constants.length }};
+#}}
+
+{{## def.bases:{{~ decl.inherits : i }}, {{= i.type }}{{~}}#}}
+
+{{## def.inherits:
+    static const TypeInfo* bases[] = { this{{# def.bases }}, nullptr };
+    Inherits = bases;
+#}}
+
+
+{{## def.fields:
+{{? decl.fields && decl.fields.length }}
+    static Property p[ {{= decl.fields.length }} ];
+        {{~ decl.fields : f:fi }}
+    {{# def.attrs:{decl:f, name:"a", prefix:"p"} }}
+    p[{{=fi}}].Name  = "{{= f.name }}";
+    p[{{=fi}}].Info  = Type<{{= f.type }}>();
+    p[{{=fi}}].Get   = []( void* o ) -> void* { return &reinterpret_cast<{{= decl.name }}*>(o)->{{= f.name }}; };
+        {{~}}
+    Properties      = p;
+    NumProperties   = {{= decl.fields.length }};
+{{?}}
+#}}
+
+
+

@@ -1,0 +1,30 @@
+{{## def.enum:
+{{~ c.constants : e:i }}
+    e[{{=i}}].Name  = "{{= e.name }}";
+    e[{{=i}}].Value = "{{= e.value }}";
+{{~}}
+#}}
+
+
+{{## def.fields:
+{{? c.fields && c.fields.length }}
+    static Property p[ {{= c.fields.length }} ];
+        {{~ c.fields : f:i }}
+    p[{{=i}}].Name  = "{{= f.name }}";
+    p[{{=i}}].Info  = Type<{{= f.type }}>();
+    p[{{=i}}].Get   = []( void* o ) -> void* { return &reinterpret_cast<{{= c.name }}*>(o)->{{= f.name }}; };
+        {{~}}
+    Properties      = p;
+    NumProperties   = {{= c.fields.length }};
+{{?}}
+#}}
+
+
+{{## def.attrs:
+{{? c.attrs && c.attrs.length }}
+    Attr a[ {{= c.attrs.length }} ];
+    Attrs       = a;
+    NumAttrs    = {{= c.attrs.length }};
+{{?}}
+#}}
+
