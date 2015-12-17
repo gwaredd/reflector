@@ -46,7 +46,10 @@ try
   json    = processJson file
   tmpl    = dot.process path: "."
 
-  output  = tmpl.rtti { file: file, classes: json } #, undefined, tmpl.__includes.rtti
+  output  = tmpl.rtti
+    file    : file
+    date    : (new Date()).toString()
+    classes : json
 
   fs.writeFileSync "out.cpp", output
 

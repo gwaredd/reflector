@@ -1,19 +1,15 @@
 ////////////////////////////////////////////////////////////////////////////////
-//
-// This file has been auto-genertated
-//
-//  source  : {{= it.file }}
-//  date    :
-//
-////////////////////////////////////////////////////////////////////////////////
+// Automatically generated RTTI information
+// source  : {{= it.file }}
+// date    : {{= it.date }}
+{{# def.rtti }}
 
 #include "gw/gw.h"
 #include "gw/gwRTTI.h"
 
-// TODO: attrs, bases
-
 using namespace gw::RTTI;
-{{# def.rtti }}
+
+
 ////////////////////////////////////////////////////////////////////////////////
 // common types
 
@@ -31,15 +27,24 @@ gwRTTI_REGISTER( double );
 // {{= decl.name }}
 
 template<> void TypeInfoImpl< {{= decl.name }} >::Create()
-{
-{{? decl.type == 'enum' }}
-    {{# def.attrs:{decl:decl, name:"attrs", prefix:""} }}
-    {{# def.enum }}
-{{??}}
-    {{# def.inherits }}
-    {{# def.attrs:{decl:decl, name:"attrs", prefix:""} }}
-    {{# def.fields }}
-{{?}}
+{{{? decl.type == 'enum' }}{{? decl.attrs && Object.keys( decl.attrs ).length }}
+    //
+    // attrs
+    //
+    {{# def.attrs:{decl:decl, name:"attrs", prefix:""} }}{{?}}
+    //
+    // constants
+    //
+    {{# def.enum }}{{??}}
+    //
+    // base classes
+    //
+    {{# def.inherits }}{{? decl.attrs && Object.keys( decl.attrs ).length }}
+    //
+    // class attributes
+    //
+    {{# def.attrs:{decl:decl, name:"attrs", prefix:""} }}{{?}}{{? decl.fields && decl.fields.length }}
+    {{# def.fields }}{{?}}{{?}}
 }
 
 gwRTTI_REGISTER( {{= decl.name }} );
