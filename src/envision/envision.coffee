@@ -42,14 +42,21 @@ try
 
   usage() unless process.argv.length > 2
 
+  # load json and templates
+
   file    = process.argv[ 2 ]
   json    = processJson file
   tmpl    = dot.process path: "."
+
+  # run templates with json
 
   output  = tmpl.rtti
     file    : file
     date    : (new Date()).toString()
     classes : json
+
+
+  # write output file
 
   fs.writeFileSync "out.cpp", output
 
