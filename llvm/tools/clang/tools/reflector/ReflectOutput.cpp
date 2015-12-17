@@ -72,6 +72,11 @@ void ReflectOutput::WriteClass( CXXRecordDecl* record )
             {
                 mJSON.Field( "type", base.getType().getAsString( pp ).c_str() );
                 mJSON.Field( "access", AccessToString( base.getAccessSpecifier() ) );
+
+                if( base.isVirtual() )
+                {
+                    mJSON.Field( "virtual", "true" );
+                }
             }
             mJSON.EndObject();
         }

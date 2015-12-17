@@ -37,11 +37,21 @@ void ReflectContext::SkipWhitespace()
 
 void ReflectContext::SkipPunct()
 {
-    while( *mP && ( ispunct( *mP ) || isspace(*mP) ) )
+    while( *mP && ( *mP != '\"' && *mP != '\'' && *mP != '-' ) && ( ispunct( *mP ) || isspace(*mP) ) )
     {
         ++mP;
     }
 }
+
+void ReflectContext::SkipIf( char ch )
+{
+    if( *mP && *mP == ch )
+    {
+        ++mP;
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
 
 StringRef ReflectContext::NextWord()
 {
@@ -49,9 +59,7 @@ StringRef ReflectContext::NextWord()
 
     if( *mP == '"' || *mP == '\'' )
     {
-        char stop = *mP;
-        ++mP;
-
+        char stop  = *mP++;
         auto start = mP;
 
         while( *mP && *mP != stop )
@@ -91,13 +99,6 @@ StringRef ReflectContext::NextWord()
     }
 }
 
-void ReflectContext::SkipIf( char ch )
-{
-    if( *mP && *mP == ch )
-    {
-        ++mP;
-    }
-}
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -117,6 +118,10 @@ bool ReflectContext::ParseComment( comments::FullComment* comment )
         return mReflect;
     }
 
+    // amalgamate comments
+
+    std::string str;
+
     for( auto commentItr = comment->child_begin(); commentItr != comment->child_end(); ++commentItr )
     {
         auto commentSection = *commentItr;
@@ -130,69 +135,71 @@ bool ReflectContext::ParseComment( comments::FullComment* comment )
         {
             if( auto textComment = dyn_cast<comments::TextComment>( *textItr ) )
             {
-                mP = textComment->getText().str().c_str();
+                str += textComment->getText().ltrim();
+                str += " ";
 
                 // reflect comments start with % - otherwise ignore them
 
-                SkipWhitespace();
-
-                if( *mP != '%' )
+                if( str[0] != '%' )
                 {
-                    continue;
-                }
-
-                ++mP;
-
-                // %%
-                SkipIf( '%' );
-
-
-                // %! - don't reflect
-
-                if( *mP == '!' )
-                {
-                    mReflect = mP[1] != '!'; // %!! turn rest of fields off (unless we reflect again)
-                    return false;
-                }
-
-                // toggle back on
-
-                mReflect = true;
-
-
-                // %% key=value, a="hello world", ... -- comment
-
-                SkipWhitespace();
-
-                while( *mP )
-                {
-                    // comment
-
-                    if( mP[0] == '-' && mP[1] == '-' )
-                    {
-                        break;
-                    }
-
-                    // key=value
-
-                    auto key = NextWord();
-
-                    if( *mP != '=' || key.empty() )
-                    {
-                        break;
-                    }
-
-                    ++mP;
-                    auto value = NextWord();
-
-                    SkipPunct();
-
-                    // add to list
-
-                    mAttrs.push_back( std::make_pair( key.str(), value.str() ) );
+                    return mReflect;
                 }
             }
         }
+    }
+
+
+    // %%
+
+    mP = str.c_str();
+
+    SkipIf( '%' );
+    SkipIf( '%' );
+
+
+    // %! - don't reflect
+
+    if( *mP == '!' )
+    {
+        mReflect = mP[1] != '!'; // %!! turn rest of fields off (unless we reflect again)
+        return false;
+    }
+
+    // toggle back on
+
+    mReflect = true;
+
+
+    // %% key=value, a="hello world", ... -- comment
+
+    SkipWhitespace();
+
+    while( *mP )
+    {
+        // comment
+
+        if( mP[0] == '-' && mP[1] == '-' )
+        {
+            break;
+        }
+
+        // key=value
+
+        auto key = NextWord();
+
+        if( *mP != '=' || key.empty() )
+        {
+            break;
+        }
+
+        ++mP;
+        auto value = NextWord();
+
+        SkipPunct();
+
+        // add to list
+
+        mAttrs.push_back( std::make_pair( key.str(), value.str() ) );
     }
 
     return mReflect;
