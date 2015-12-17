@@ -45,6 +45,7 @@ gwRTTI_REGISTER( double );
 
 template<> void TypeInfoImpl< AClass >::Create()
 {
+
     
     static const TypeInfo* bases[] = { this, nullptr };
     Inherits = bases;
@@ -163,6 +164,7 @@ gwRTTI_REGISTER( AClass );
 
 template<> void TypeInfoImpl< MyEnum >::Create()
 {
+
     
 
 
@@ -201,6 +203,7 @@ gwRTTI_REGISTER( MyEnum );
 
 template<> void TypeInfoImpl< ClassWithEnum >::Create()
 {
+
     
     static const TypeInfo* bases[] = { this, nullptr };
     Inherits = bases;
@@ -242,6 +245,7 @@ gwRTTI_REGISTER( ClassWithEnum );
 
 template<> void TypeInfoImpl< ClassWithEnum::ClassEnum >::Create()
 {
+
     
 
 
@@ -280,6 +284,7 @@ gwRTTI_REGISTER( ClassWithEnum::ClassEnum );
 
 template<> void TypeInfoImpl< NSRef >::Create()
 {
+
     
     static const TypeInfo* bases[] = { this, nullptr };
     Inherits = bases;
@@ -321,6 +326,7 @@ gwRTTI_REGISTER( NSRef );
 
 template<> void TypeInfoImpl< MyStruct >::Create()
 {
+
     
     static const TypeInfo* bases[] = { this, nullptr };
     Inherits = bases;
@@ -373,6 +379,7 @@ gwRTTI_REGISTER( MyStruct );
 
 template<> void TypeInfoImpl< MyStruct::SubClass >::Create()
 {
+
     
     static const TypeInfo* bases[] = { this, nullptr };
     Inherits = bases;
@@ -414,6 +421,7 @@ gwRTTI_REGISTER( MyStruct::SubClass );
 
 template<> void TypeInfoImpl< Attrs >::Create()
 {
+
     
     static const TypeInfo* bases[] = { this, nullptr };
     Inherits = bases;
@@ -548,6 +556,7 @@ gwRTTI_REGISTER( Attrs );
 
 template<> void TypeInfoImpl< MultilineAttr >::Create()
 {
+
     
     static const TypeInfo* bases[] = { this, nullptr };
     Inherits = bases;
@@ -590,6 +599,7 @@ gwRTTI_REGISTER( MultilineAttr );
 
 template<> void TypeInfoImpl< EnumAttr >::Create()
 {
+
     
 
 
@@ -640,6 +650,7 @@ gwRTTI_REGISTER( EnumAttr );
 
 template<> void TypeInfoImpl< A >::Create()
 {
+
     
     static const TypeInfo* bases[] = { this, nullptr };
     Inherits = bases;
@@ -689,6 +700,7 @@ gwRTTI_REGISTER( A );
 
 template<> void TypeInfoImpl< B >::Create()
 {
+
     
     static const TypeInfo* bases[] = { this, A, nullptr };
     Inherits = bases;
@@ -738,6 +750,7 @@ gwRTTI_REGISTER( B );
 
 template<> void TypeInfoImpl< C >::Create()
 {
+
     
     static const TypeInfo* bases[] = { this, B, nullptr };
     Inherits = bases;
@@ -779,6 +792,7 @@ gwRTTI_REGISTER( C );
 
 template<> void TypeInfoImpl< Base >::Create()
 {
+
     
     static const TypeInfo* bases[] = { this, nullptr };
     Inherits = bases;
@@ -804,6 +818,7 @@ gwRTTI_REGISTER( Base );
 
 template<> void TypeInfoImpl< C1 >::Create()
 {
+
     
     static const TypeInfo* bases[] = { this, Base, nullptr };
     Inherits = bases;
@@ -829,6 +844,7 @@ gwRTTI_REGISTER( C1 );
 
 template<> void TypeInfoImpl< C2 >::Create()
 {
+
     
     static const TypeInfo* bases[] = { this, Base, nullptr };
     Inherits = bases;
@@ -854,6 +870,7 @@ gwRTTI_REGISTER( C2 );
 
 template<> void TypeInfoImpl< D >::Create()
 {
+
     
     static const TypeInfo* bases[] = { this, C1, C2, nullptr };
     Inherits = bases;
@@ -879,6 +896,7 @@ gwRTTI_REGISTER( D );
 
 template<> void TypeInfoImpl< E >::Create()
 {
+
     
     static const TypeInfo* bases[] = { this, D, nullptr };
     Inherits = bases;
@@ -904,6 +922,7 @@ gwRTTI_REGISTER( E );
 
 template<> void TypeInfoImpl< V1 >::Create()
 {
+
     
     static const TypeInfo* bases[] = { this, Base, nullptr };
     Inherits = bases;
@@ -929,6 +948,7 @@ gwRTTI_REGISTER( V1 );
 
 template<> void TypeInfoImpl< V2 >::Create()
 {
+
     
     static const TypeInfo* bases[] = { this, Base, nullptr };
     Inherits = bases;
@@ -954,6 +974,7 @@ gwRTTI_REGISTER( V2 );
 
 template<> void TypeInfoImpl< D2 >::Create()
 {
+
     
     static const TypeInfo* bases[] = { this, V1, V2, nullptr };
     Inherits = bases;

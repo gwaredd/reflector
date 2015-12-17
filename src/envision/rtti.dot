@@ -31,8 +31,8 @@ gwRTTI_REGISTER( double );
 // {{= decl.name }}
 
 template<> void TypeInfoImpl< {{= decl.name }} >::Create()
-{{
-{? decl.type == 'enum' }}
+{
+{{? decl.type == 'enum' }}
     {{# def.attrs:{decl:decl, name:"attrs", prefix:""} }}
     {{# def.enum }}
 {{??}}

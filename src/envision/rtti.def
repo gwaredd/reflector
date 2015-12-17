@@ -35,7 +35,6 @@
     Inherits = bases;
 #}}
 
-
 {{## def.fields:
 {{? decl.fields && decl.fields.length }}
     static Property p[ {{= decl.fields.length }} ];
