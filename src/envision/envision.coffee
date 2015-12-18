@@ -22,7 +22,7 @@ usage = ->
   coffee  = process.argv[ 0 ]
   script  = path.basename process.argv[ 1 ]
 
-  console.log "Usage:".cyan, "#{ coffee } #{ script }", "<json file>".yellow
+  console.log "Usage:".cyan, "#{ coffee } #{ script }", "<json file> <output cpp>".yellow
   process.exit()
 
 
@@ -40,25 +40,26 @@ processJson = (file) ->
 
 try
 
-  usage() unless process.argv.length > 2
+  usage() unless process.argv.length > 3
 
   # load json and templates
 
-  file    = process.argv[ 2 ]
-  json    = processJson file
+  filein  = process.argv[ 2 ]
+  fileout = process.argv[ 3 ]
+  json    = processJson filein
   tmpl    = dot.process path: "."
 
   # run templates with json
 
   output  = tmpl.rtti
-    file    : file
+    file    : filein
     date    : (new Date()).toString()
     classes : json
 
 
   # write output file
 
-  fs.writeFileSync "out.cpp", output
+  fs.writeFileSync fileout, output
 
 
 catch e
