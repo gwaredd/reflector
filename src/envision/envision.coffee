@@ -4,13 +4,7 @@ fs      = require 'fs'
 path    = require 'path'
 colours = require 'colors'
 dot     = require 'dot'
-
-
-# config
-
-colours.setTheme
-  warn : 'magenta'
-  error: 'red'
+envis   = require './envisaged'
 
 dot.templateSettings.strip = false
 
@@ -28,41 +22,28 @@ usage = ->
 
 #-------------------------------------------------------------------------------
 
-processJson = (file) ->
-
-  console.log ""
-  console.log "Processing '#{ file }'"
-
-  return require file
-
-
-#-------------------------------------------------------------------------------
-
 try
+
+  # read command line args
 
   usage() unless process.argv.length > 3
 
-  # load json and templates
+  file_in   = process.argv[ 2 ]
+  file_out  = process.argv[ 3 ]
 
-  filein  = process.argv[ 2 ]
-  fileout = process.argv[ 3 ]
-  json    = processJson filein
-  tmpl    = dot.process path: "."
 
-  # run templates with json
+  # pre-process data and execute rtti.dot template
 
-  output  = tmpl.rtti
-    file    : filein
+  output = dot.process( path: "." ).rtti
+    file    : path.basename file_in
     date    : (new Date()).toString()
-    classes : json
+    data    : envis file_in
 
+  # write out result
 
-  # write output file
-
-  fs.writeFileSync fileout, output
-
+  fs.writeFileSync file_out, output
 
 catch e
 
-  console.log "[ERROR]".error, e
+  console.log "[ERROR]".red, e
 

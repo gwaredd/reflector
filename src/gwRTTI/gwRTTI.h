@@ -25,24 +25,43 @@ namespace gw
 {
     namespace RTTI
     {
+        struct TypeInfo;
+        
         ////////////////////////////////////////////////////////////////////////////////
-
-        struct GWRTTI_API Property
+        
+        struct Attr
+        {
+            const char* Key;
+            const char* Value;
+        };
+        
+        struct Constant
         {
             const char* Name;
+            int         Value;
+        };
+        
+        
+        ////////////////////////////////////////////////////////////////////////////////
+
+        struct GWRTTI_API Field
+        {
             void* (*Get)( void* );
-            void* Attrs; // key,value pairs?
+            
+            const char*     Name;
+            const TypeInfo* Info;
+            
+            Attr*           Attrs;
+            int             NumAttrs;
+            bool            IsPointer;
 
-            bool IsPointer;
-
-            const struct TypeInfo* Info;
-
-            Property()
-                : Name( nullptr )
-                , Get( nullptr )
-                , Attrs( nullptr )
-                , IsPointer( false )
+            Field()
+                : Get( nullptr )
+                , Name( nullptr )
                 , Info( nullptr )
+                , Attrs( nullptr )
+                , NumAttrs( 0 )
+                , IsPointer( false )
             {
             }
         };
@@ -53,13 +72,14 @@ namespace gw
         struct GWRTTI_API TypeInfo
         {
             bool    IsA( const TypeInfo* ) const;
-            void*   Get( void*, const char* ) const;
+            void*   GetField( void*, const char* ) const;
 
-
-            unsigned int    UID;
-            std::string     Name;
-            uint64_t        Hash;
-            void* (*Instantiate)();
+            unsigned int    UID;        // internal unique identifier
+            std::string     Name;       // name
+            uint64_t        Hash;       // djb2 hash of name
+            void* (*Instantiate)();     // instantiate function
+            
+            // potentially useful(!?) things we can infer from the type
 
             bool            IsFundamental:1;
             bool            IsClass:1;
@@ -67,17 +87,20 @@ namespace gw
             bool            IsEnum:1;
             bool            IsPointer:1;
 
-            Property*       Properties;
-            int             NumProperties;
-            const TypeInfo** Inherits;
-            // contants ...
-
+            const TypeInfo** Inherits;  // base classes
+            
+            Field*          Fields;     // classes have fields
+            Constant*       Constants;  // enums have constants ... don't get them confused :)
+            
+            int             NumMembers; // num fields or num constants
+            
+            Attr*           Attrs;      // key/value attribute pairs
+            int             NumAttrs;
+            
             TypeInfo()
                 : UID( 0 )
                 , Hash( ~0 )
-                , Properties( nullptr )
-                , NumProperties( 0 )
-                , Inherits( nullptr )
+                , Instantiate( nullptr )
 
                 , IsFundamental( false )
                 , IsClass( false )
@@ -85,7 +108,12 @@ namespace gw
                 , IsEnum( false )
                 , IsPointer( false )
 
-                , Instantiate( nullptr )
+                , Inherits( nullptr )
+                , Fields( nullptr )
+                , Constants( nullptr )
+                , NumMembers( 0 )
+                , Attrs( nullptr )
+                , NumAttrs( 0 )
             {
             }
         };
@@ -129,29 +157,28 @@ namespace gw
 
             void Create() {}
 
-            // return typeinfo for this class
-
             static const TypeInfo* Class()
             {
-                // first call we fetch from registry - this is because of memory is local to "shared boundaries"
-                // (i.e. Windows DLL's). This isn't a problem if the library is statically linked
-
-                #ifdef gwCOMPILER_MSVC
-                    static const TypeInfo* info = Initialise( gw::RTTI::Registry::Instance().FindOrCreate( __FUNCSIG__ ) );
-                #else
-                    static const TypeInfo* info = Initialise( gw::RTTI::Registry::Instance().FindOrCreate( __PRETTY_FUNCTION__ ) );
-                #endif
-
+                static const TypeInfo* info = CreateTypeInfo();
                 return info;
             }
 
 
-            // some default bonus initialisation
-
             protected:
+            
+                // called first time we access the class - which be from gwRTTI_REGISTER!
 
-                static const TypeInfo* Initialise( const TypeInfo* info )
+                static const TypeInfo* CreateTypeInfo()
                 {
+                    // first call we fetch from registry - this is because of memory is local to "shared boundaries"
+                    // (i.e. Windows DLL's). This isn't a problem if the library is statically linked
+                    
+                    #ifdef gwCOMPILER_MSVC
+                        TypeInfo* info = gw::RTTI::Registry::Instance().FindOrCreate( __FUNCSIG__ );
+                    #else
+                        TypeInfo* info = gw::RTTI::Registry::Instance().FindOrCreate( __PRETTY_FUNCTION__ );
+                    #endif
+                    
                     auto p = reinterpret_cast< TypeInfoImpl<T>* >( const_cast<TypeInfo*>( info ) );
 
                     p->Instantiate     = std::is_constructible<T>::value ? []() -> void* { return new T(); } : nullptr;

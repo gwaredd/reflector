@@ -3,26 +3,22 @@
 // source  : {{= it.file }}
 // date    : {{= it.date }}
 {{# def.rtti }}
+#include <vector>
+#include <string>
 
 #include "gw/gw.h"
-#include "gw/gwRTTI.h"
-
+#include "gwRTTI/gwRTTI.h"
+{{~ it.data.includes : inc }}#include "{{= inc }}"
+{{~}}
 using namespace gw::RTTI;
 
-
+{{? it.data.misc.length }}
 ////////////////////////////////////////////////////////////////////////////////
 // common types
-
-gwRTTI_REGISTER( bool );
-gwRTTI_REGISTER( char );
-gwRTTI_REGISTER( unsigned char );
-gwRTTI_REGISTER( short );
-gwRTTI_REGISTER( int );
-gwRTTI_REGISTER( unsigned int );
-gwRTTI_REGISTER( float );
-gwRTTI_REGISTER( double );
-
-{{~ it.classes : decl }}
+{{~ it.data.misc : t }}
+gwRTTI_REGISTER( {{= t }} );{{~}}
+{{?}}
+{{~ it.data.classes : decl }}
 ////////////////////////////////////////////////////////////////////////////////
 // {{= decl.name }}
 

@@ -44,16 +44,21 @@ namespace gw
             return false;
         }
         
-        void* TypeInfo::Get( void* obj, const char* name ) const
+        void* TypeInfo::GetField( void* obj, const char* name ) const
         {
-            for( auto i=0; i < NumProperties; ++i )
+            if( IsEnum )
             {
-                if( strcmp( Properties[ i ].Name, name ) != 0 )
+                return nullptr;
+            }
+            
+            for( auto i=0; i < NumMembers; ++i )
+            {
+                if( strcmp( Fields[ i ].Name, name ) != 0 )
                 {
                     continue;
                 }
                 
-                auto get = Properties[ i ].Get;
+                auto get = Fields[ i ].Get;
                 return get ? get( obj ) : nullptr;
             }
             

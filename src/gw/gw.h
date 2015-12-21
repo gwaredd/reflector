@@ -1,8 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
 // a small and lightweight configuration for gw libraries that attempts to 
-// unify the basic environment across platforms and projects to assist
-// portability
+// unify the basic environment across platforms and projects to assist portability
 //
 
 #pragma once
@@ -110,10 +109,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 // incase we want to redirect debug output
 
-inline void gwDebugEnableOutput( bool enable )   { extern bool gw_gEnableTrace; gw_gEnableTrace = enable; }
-inline bool gwDebugIsOutputEnabled()             { extern bool gw_gEnableTrace; return gw_gEnableTrace; }
-
 #ifdef gwDEBUG
+
+    inline void gwDebugEnableOutput( bool enable )   { extern bool gw_gEnableTrace; gw_gEnableTrace = enable; }
+    inline bool gwDebugIsOutputEnabled()             { extern bool gw_gEnableTrace; return gw_gEnableTrace; }
 
     extern void gwDebugError( const char*, const char*, int );
     extern void gwDebugPrintf( const char*, ... );
@@ -133,7 +132,10 @@ inline bool gwDebugIsOutputEnabled()             { extern bool gw_gEnableTrace; 
 
 #else
 
-    #define gwTrace(...)      
+    #define gwDebugEnableOutput(...)
+    #define gwDebugIsOutputEnabled()    false
+
+    #define gwTrace(...)
     #define gwWarning(...)
     #define gwError(...)
     #define gwAssert(...)

@@ -16,17 +16,17 @@
     // set constants
 
     Constants       = e;
-    NumConstants    = {{= decl.constants.length }};#}}{{## def.inherits:
-    static const TypeInfo* bases[] = { this{{~ decl.inherits : base }}, {{= base.type }}{{~}}, nullptr };
+    NumMembers      = {{= decl.constants.length }};#}}{{## def.inherits:
+    static const TypeInfo* bases[] = { this{{~ decl.inherits : base }}, Type<{{= base.type }}>(){{~}}, nullptr };
     Inherits = bases;
 #}}{{## def.fields:{{? decl.fields && decl.fields.length }}
     //
     // class fields
     //
 
-    static Property p[ {{= decl.fields.length }} ];
+    static Field p[ {{= decl.fields.length }} ];
 {{~ decl.fields : f:fi }}
-    // {{= fi}}. {{= f.name }}
+    // {{= fi}}. {{= f.name }}{{? f.from }} (inhertied from {{= f.from }}){{?}}
 
     p[ {{=fi}} ].Name     = "{{= f.name }}";
     p[ {{=fi}} ].Info     = Type< {{= f.type }} >();
@@ -35,5 +35,5 @@
 {{~}}
     // set fields
 
-    Properties      = p;
-    NumProperties   = {{= decl.fields.length }};{{?}}#}}
+    Fields          = p;
+    NumMembers      = {{= decl.fields.length }};{{?}}#}}

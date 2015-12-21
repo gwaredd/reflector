@@ -52,7 +52,7 @@ namespace gw
                 return *this;
             }
 
-            const gwchar operator[]( unsigned int index ) const
+            gwchar operator[]( unsigned int index ) const
             {
                 return index < (unsigned int) mLength ? mData[ index ] : '\0';
             }

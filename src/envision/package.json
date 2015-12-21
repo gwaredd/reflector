@@ -10,6 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "colors": "^1.1.2",
-    "dot": "^1.0.3"
+    "dot": "^1.0.3",
+    "underscore": "^1.8.3"
   }
 }
