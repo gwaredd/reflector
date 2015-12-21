@@ -1,87 +1,61 @@
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <stdio.h>
-#include <stdlib.h>
-
-#include "rapidjson/reader.h"
-#include "rapidjson/prettywriter.h"
-#include "rapidjson/stringbuffer.h"
 #include <iostream>
 
-#include "gw/gw.h"
-#include "gwRTTI/gwRTTI.h"
-
+#include "json.h"
 #include "classes.h"
-
-using namespace rapidjson;
 
 
 std::vector< GameObject* > GameObjects;
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// create some random objects
 
-static int ID = 0;
-
-bool RandomChance()
-{
-    return ( rand() >> 6 ) % 3 != 0;  // 2 in 3 chance
-}
-
-GameObject* GameObject::CreateRandom( bool children )
-{
-    char id[ 8 ];
-    sprintf( id, "%i", ++ID );
-    
-    Name = "Object";
-    Name += id;
-    
-    
-    // components
-    
-    if( RandomChance() )
-    {
-        std::string mesh = "Mesh";
-        mesh += id;
-        
-        auto comp = new RenderComponent();
-        comp->LoadMesh( mesh.c_str() );
-        
-        Components.push_back( comp );
-    }
-    
-    if( RandomChance() )
-    {
-        Components.push_back( new PhysicsComponent() );
-    }
-    
-    if( RandomChance() )
-    {
-        Components.push_back( new ScriptComponent() );
-    }
-    
-    // children
-    
-    if( children )
-    {
-        int numChildren = rand() % 5;
-        
-        for( int i=0; i < numChildren; i++ )
-        {
-            Children.push_back( ( new GameObject() )->CreateRandom( false ) );
-        }
-    }
-    
-    return this;
-}
 
 void Create()
 {
     for( int i=0; i < 10; i++ )
     {
-        GameObjects.push_back( ( new GameObject() )->CreateRandom() );
+        auto go = new GameObject();
+        GameObjects.push_back( go->CreateRandom() );
     }
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+
+void Save( const char* filename )
+{
+    // create output file
+    
+    std::cout << "Saving '" << filename << "'" << std::endl;
+    
+    auto fp = fopen( filename, "wb" );
+    
+    if( fp == nullptr )
+    {
+        std::cerr << "Failed to open output file" << std::endl;
+        return;
+    }
+    
+    char writeBuffer[ 65536 ];
+    
+    FileWriteStream os( fp, writeBuffer, sizeof( writeBuffer ) );
+    PrettyWriter< FileWriteStream > writer( os );
+
+    
+    // save objects via reflection
+    
+    writer.StartArray();
+    
+    for( auto o : GameObjects )
+    {
+        ExampleWrite( writer, o->GetType(), o );
+    }
+    
+    writer.EndArray();
+    
+    fclose( fp );
 }
 
 
@@ -89,30 +63,50 @@ void Create()
 
 void Load( const char* filename )
 {
+    // open file
     
-}
-
-
-////////////////////////////////////////////////////////////////////////////////
-
-void Save()
-{
-    StringBuffer s;
-    PrettyWriter< StringBuffer > writer( s );
+    std::cout << "Loading '" << filename << "'" << std::endl;
     
-    writer.StartArray();
+    auto fp = fopen( filename, "rb" );
     
-    for( auto o : GameObjects )
+    if( fp == nullptr )
     {
-        writer.StartObject();
-        writer.String( "name" );
-        writer.String( o->Name.c_str() );
-        writer.EndObject();
+        std::cerr << "Failed to open input file" << std::endl;
+        return;
     }
     
-    writer.EndArray();
+    char readBuffer[ 65536 ];
+    FileReadStream is( fp, readBuffer, sizeof( readBuffer ) );
     
-    std::cout << s.GetString() << std::endl;
+    // parse document
+    
+    Document doc;
+    doc.ParseStream( is );
+    
+    if( doc.IsArray() )
+    {
+        std::string ObjTag = "GameObject";
+        
+        for( Value::ConstValueIterator itr = doc.Begin(); itr != doc.End(); ++itr )
+        {
+            const Document::GenericValue& node = *itr;
+            
+            if( node.HasMember( "Type" ) && ObjTag == node[ "Type" ].GetString() )
+            {
+                if( auto obj = ExampleRead( nullptr, *itr ) )
+                {
+                    auto go = reinterpret_cast<GameObject*>( obj );
+                    GameObjects.push_back( go );
+                }
+            }
+        }
+    }
+    else
+    {
+        std::cerr << "Was expecting an array" << std::endl;
+    }
+    
+    fclose(fp);    
 }
 
 
@@ -120,49 +114,17 @@ void Save()
 
 int main( int argc, char* argv[] )
 {
+    srand( (unsigned int) time( nullptr ) );
+    
+    auto filename = "gameobjects.json";
+    
+    /**
     Create();
-    Save();
-    return 0;
-}
-
-/*
-#include "rapidjson/reader.h"
-#include <iostream>
-
-using namespace rapidjson;
-using namespace std;
-
-struct MyHandler {
-    bool Null() { cout << "Null()" << endl; return true; }
-    bool Bool(bool b) { cout << "Bool(" << boolalpha << b << ")" << endl; return true; }
-    bool Int(int i) { cout << "Int(" << i << ")" << endl; return true; }
-    bool Uint(unsigned u) { cout << "Uint(" << u << ")" << endl; return true; }
-    bool Int64(int64_t i) { cout << "Int64(" << i << ")" << endl; return true; }
-    bool Uint64(uint64_t u) { cout << "Uint64(" << u << ")" << endl; return true; }
-    bool Double(double d) { cout << "Double(" << d << ")" << endl; return true; }
-    bool String(const char* str, SizeType length, bool copy) {
-        cout << "String(" << str << ", " << length << ", " << boolalpha << copy << ")" << endl;
-        return true;
-    }
-    bool StartObject() { cout << "StartObject()" << endl; return true; }
-    bool Key(const char* str, SizeType length, bool copy) {
-        cout << "Key(" << str << ", " << length << ", " << boolalpha << copy << ")" << endl;
-        return true;
-    }
-    bool EndObject(SizeType memberCount) { cout << "EndObject(" << memberCount << ")" << endl; return true; }
-    bool StartArray() { cout << "StartArray()" << endl; return true; }
-    bool EndArray(SizeType elementCount) { cout << "EndArray(" << elementCount << ")" << endl; return true; }
-};
-
-int main() {
-    const char json[] = " { \"hello\" : \"world\", \"t\" : true , \"f\" : false, \"n\": null, \"i\":123, \"pi\": 3.1416, \"a\":[1, 2, 3, 4] } ";
-    
-    MyHandler handler;
-    Reader reader;
-    StringStream ss(json);
-    reader.Parse(ss, handler);
+    Save( filename );
+    /*/
+    Load( filename );
+    /**/
     
     return 0;
 }
-**/
 

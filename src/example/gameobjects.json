@@ -1,0 +1,715 @@
+[
+    {
+        "Type": "GameObject",
+        "Name": "Object1",
+        "Position": {
+            "Type": "Vector3",
+            "x": "-99.998436",
+            "y": "-73.692444",
+            "z": "51.121063"
+        },
+        "Components": [
+            {
+                "Type": "RenderComponent",
+                "Name": "RenderComponent",
+                "Enabled": "true",
+                "Mesh": {
+                    "Type": "RenderMesh"
+                }
+            },
+            {
+                "Type": "CollisionComponent",
+                "Name": "CollisionComponent",
+                "Enabled": "true",
+                "CollisionType": "Sphere",
+                "CollisionResonse": "Soft"
+            },
+            {
+                "Type": "ScriptComponent",
+                "Name": "ScriptComponent",
+                "Enabled": "true",
+                "Script": "myscript",
+                "SomeValue": "29.302015"
+            }
+        ],
+        "Children": []
+    },
+    {
+        "Type": "GameObject",
+        "Name": "Object2",
+        "Position": {
+            "Type": "Vector3",
+            "x": "3.883278",
+            "y": "66.193069",
+            "z": "-93.085579"
+        },
+        "Components": [
+            {
+                "Type": "PhysicsComponent",
+                "Name": "PhysicsComponent",
+                "Enabled": "true",
+                "CollisionType": "AABB"
+            },
+            {
+                "Type": "ScriptComponent",
+                "Name": "ScriptComponent",
+                "Enabled": "true",
+                "Script": "myscript",
+                "SomeValue": "6.737898"
+            }
+        ],
+        "Children": [
+            {
+                "Type": "GameObject",
+                "Name": "Object3",
+                "Position": {
+                    "Type": "Vector3",
+                    "x": "37.354538",
+                    "y": "17.795326",
+                    "z": "86.087296"
+                },
+                "Components": [
+                    {
+                        "Type": "RenderComponent",
+                        "Name": "RenderComponent",
+                        "Enabled": "true",
+                        "Mesh": {
+                            "Type": "RenderMesh"
+                        }
+                    },
+                    {
+                        "Type": "PhysicsComponent",
+                        "Name": "PhysicsComponent",
+                        "Enabled": "true",
+                        "CollisionType": "Sphere"
+                    }
+                ],
+                "Children": []
+            },
+            {
+                "Type": "GameObject",
+                "Name": "Object4",
+                "Position": {
+                    "Type": "Vector3",
+                    "x": "40.238113",
+                    "y": "82.064163",
+                    "z": "52.439606"
+                },
+                "Components": [
+                    {
+                        "Type": "PhysicsComponent",
+                        "Name": "PhysicsComponent",
+                        "Enabled": "true",
+                        "CollisionType": "Sphere"
+                    },
+                    {
+                        "Type": "ScriptComponent",
+                        "Name": "ScriptComponent",
+                        "Enabled": "true",
+                        "Script": "myscript",
+                        "SomeValue": "24.666672"
+                    }
+                ],
+                "Children": []
+            },
+            {
+                "Type": "GameObject",
+                "Name": "Object5",
+                "Position": {
+                    "Type": "Vector3",
+                    "x": "98.207474",
+                    "y": "-26.932266",
+                    "z": "-50.592224"
+                },
+                "Components": [
+                    {
+                        "Type": "RenderComponent",
+                        "Name": "RenderComponent",
+                        "Enabled": "true",
+                        "Mesh": {
+                            "Type": "RenderMesh"
+                        }
+                    },
+                    {
+                        "Type": "PhysicsComponent",
+                        "Name": "PhysicsComponent",
+                        "Enabled": "true",
+                        "CollisionType": "ConvexHull"
+                    },
+                    {
+                        "Type": "ScriptComponent",
+                        "Name": "ScriptComponent",
+                        "Enabled": "true",
+                        "Script": "myscript",
+                        "SomeValue": "21.422503"
+                    }
+                ],
+                "Children": []
+            }
+        ]
+    },
+    {
+        "Type": "GameObject",
+        "Name": "Object6",
+        "Position": {
+            "Type": "Vector3",
+            "x": "76.941437",
+            "y": "-45.458008",
+            "z": "-12.717720"
+        },
+        "Components": [
+            {
+                "Type": "RenderComponent",
+                "Name": "RenderComponent",
+                "Enabled": "true",
+                "Mesh": {
+                    "Type": "RenderMesh"
+                }
+            },
+            {
+                "Type": "CollisionComponent",
+                "Name": "CollisionComponent",
+                "Enabled": "true",
+                "CollisionType": "AABB",
+                "CollisionResonse": "Hard"
+            },
+            {
+                "Type": "ScriptComponent",
+                "Name": "ScriptComponent",
+                "Enabled": "true",
+                "Script": "myscript",
+                "SomeValue": "17.649452"
+            }
+        ],
+        "Children": [
+            {
+                "Type": "GameObject",
+                "Name": "Object7",
+                "Position": {
+                    "Type": "Vector3",
+                    "x": "81.841629",
+                    "y": "-87.887131",
+                    "z": "80.930618"
+                },
+                "Components": [
+                    {
+                        "Type": "CollisionComponent",
+                        "Name": "CollisionComponent",
+                        "Enabled": "true",
+                        "CollisionType": "ConvexHull",
+                        "CollisionResonse": "Hard"
+                    },
+                    {
+                        "Type": "ScriptComponent",
+                        "Name": "ScriptComponent",
+                        "Enabled": "true",
+                        "Script": "myscript",
+                        "SomeValue": "7.359056"
+                    }
+                ],
+                "Children": []
+            }
+        ]
+    },
+    {
+        "Type": "GameObject",
+        "Name": "Object8",
+        "Position": {
+            "Type": "Vector3",
+            "x": "89.552856",
+            "y": "-85.250183",
+            "z": "0.141418"
+        },
+        "Components": [
+            {
+                "Type": "CollisionComponent",
+                "Name": "CollisionComponent",
+                "Enabled": "true",
+                "CollisionType": "Sphere",
+                "CollisionResonse": "Hard"
+            },
+            {
+                "Type": "ScriptComponent",
+                "Name": "ScriptComponent",
+                "Enabled": "true",
+                "Script": "myscript",
+                "SomeValue": "6.302184"
+            }
+        ],
+        "Children": []
+    },
+    {
+        "Type": "GameObject",
+        "Name": "Object9",
+        "Position": {
+            "Type": "Vector3",
+            "x": "54.040909",
+            "y": "65.563461",
+            "z": "-74.926926"
+        },
+        "Components": [
+            {
+                "Type": "ScriptComponent",
+                "Name": "ScriptComponent",
+                "Enabled": "true",
+                "Script": "myscript",
+                "SomeValue": "21.368130"
+            }
+        ],
+        "Children": []
+    },
+    {
+        "Type": "GameObject",
+        "Name": "Object10",
+        "Position": {
+            "Type": "Vector3",
+            "x": "45.082397",
+            "y": "99.891586",
+            "z": "77.714447"
+        },
+        "Components": [
+            {
+                "Type": "RenderComponent",
+                "Name": "RenderComponent",
+                "Enabled": "true",
+                "Mesh": {
+                    "Type": "RenderMesh"
+                }
+            },
+            {
+                "Type": "CollisionComponent",
+                "Name": "CollisionComponent",
+                "Enabled": "true",
+                "CollisionType": "AABB",
+                "CollisionResonse": "Bouncy"
+            },
+            {
+                "Type": "ScriptComponent",
+                "Name": "ScriptComponent",
+                "Enabled": "true",
+                "Script": "myscript",
+                "SomeValue": "15.714100"
+            }
+        ],
+        "Children": [
+            {
+                "Type": "GameObject",
+                "Name": "Object11",
+                "Position": {
+                    "Type": "Vector3",
+                    "x": "-46.136547",
+                    "y": "-16.921082",
+                    "z": "7.460800"
+                },
+                "Components": [
+                    {
+                        "Type": "PhysicsComponent",
+                        "Name": "PhysicsComponent",
+                        "Enabled": "true",
+                        "CollisionType": "ConvexHull"
+                    },
+                    {
+                        "Type": "ScriptComponent",
+                        "Name": "ScriptComponent",
+                        "Enabled": "true",
+                        "Script": "myscript",
+                        "SomeValue": "25.862549"
+                    }
+                ],
+                "Children": []
+            },
+            {
+                "Type": "GameObject",
+                "Name": "Object12",
+                "Position": {
+                    "Type": "Vector3",
+                    "x": "-93.389252",
+                    "y": "6.889961",
+                    "z": "-0.303978"
+                },
+                "Components": [
+                    {
+                        "Type": "PhysicsComponent",
+                        "Name": "PhysicsComponent",
+                        "Enabled": "true",
+                        "CollisionType": "Sphere"
+                    }
+                ],
+                "Children": []
+            }
+        ]
+    },
+    {
+        "Type": "GameObject",
+        "Name": "Object13",
+        "Position": {
+            "Type": "Vector3",
+            "x": "68.407913",
+            "y": "-68.046494",
+            "z": "-57.449699"
+        },
+        "Components": [
+            {
+                "Type": "RenderComponent",
+                "Name": "RenderComponent",
+                "Enabled": "true",
+                "Mesh": {
+                    "Type": "RenderMesh"
+                }
+            },
+            {
+                "Type": "ScriptComponent",
+                "Name": "ScriptComponent",
+                "Enabled": "true",
+                "Script": "myscript",
+                "SomeValue": "12.139292"
+            }
+        ],
+        "Children": [
+            {
+                "Type": "GameObject",
+                "Name": "Object14",
+                "Position": {
+                    "Type": "Vector3",
+                    "x": "-17.141350",
+                    "y": "-94.624741",
+                    "z": "41.963928"
+                },
+                "Components": [
+                    {
+                        "Type": "RenderComponent",
+                        "Name": "RenderComponent",
+                        "Enabled": "true",
+                        "Mesh": {
+                            "Type": "RenderMesh"
+                        }
+                    },
+                    {
+                        "Type": "PhysicsComponent",
+                        "Name": "PhysicsComponent",
+                        "Enabled": "true",
+                        "CollisionType": "Sphere"
+                    },
+                    {
+                        "Type": "ScriptComponent",
+                        "Name": "ScriptComponent",
+                        "Enabled": "true",
+                        "Script": "myscript",
+                        "SomeValue": "21.953526"
+                    }
+                ],
+                "Children": []
+            },
+            {
+                "Type": "GameObject",
+                "Name": "Object15",
+                "Position": {
+                    "Type": "Vector3",
+                    "x": "-69.932991",
+                    "y": "36.269241",
+                    "z": "-22.837059"
+                },
+                "Components": [
+                    {
+                        "Type": "RenderComponent",
+                        "Name": "RenderComponent",
+                        "Enabled": "true",
+                        "Mesh": {
+                            "Type": "RenderMesh"
+                        }
+                    },
+                    {
+                        "Type": "PhysicsComponent",
+                        "Name": "PhysicsComponent",
+                        "Enabled": "true",
+                        "CollisionType": "Sphere"
+                    },
+                    {
+                        "Type": "ScriptComponent",
+                        "Name": "ScriptComponent",
+                        "Enabled": "true",
+                        "Script": "myscript",
+                        "SomeValue": "20.342825"
+                    }
+                ],
+                "Children": []
+            },
+            {
+                "Type": "GameObject",
+                "Name": "Object16",
+                "Position": {
+                    "Type": "Vector3",
+                    "x": "91.081757",
+                    "y": "11.229233",
+                    "z": "-70.369690"
+                },
+                "Components": [
+                    {
+                        "Type": "RenderComponent",
+                        "Name": "RenderComponent",
+                        "Enabled": "true",
+                        "Mesh": {
+                            "Type": "RenderMesh"
+                        }
+                    }
+                ],
+                "Children": []
+            },
+            {
+                "Type": "GameObject",
+                "Name": "Object17",
+                "Position": {
+                    "Type": "Vector3",
+                    "x": "12.979736",
+                    "y": "-49.574722",
+                    "z": "-2.297089"
+                },
+                "Components": [
+                    {
+                        "Type": "RenderComponent",
+                        "Name": "RenderComponent",
+                        "Enabled": "true",
+                        "Mesh": {
+                            "Type": "RenderMesh"
+                        }
+                    },
+                    {
+                        "Type": "ScriptComponent",
+                        "Name": "ScriptComponent",
+                        "Enabled": "true",
+                        "Script": "myscript",
+                        "SomeValue": "10.193687"
+                    }
+                ],
+                "Children": []
+            }
+        ]
+    },
+    {
+        "Type": "GameObject",
+        "Name": "Object18",
+        "Position": {
+            "Type": "Vector3",
+            "x": "-36.150066",
+            "y": "25.853836",
+            "z": "-74.657570"
+        },
+        "Components": [
+            {
+                "Type": "RenderComponent",
+                "Name": "RenderComponent",
+                "Enabled": "true",
+                "Mesh": {
+                    "Type": "RenderMesh"
+                }
+            },
+            {
+                "Type": "PhysicsComponent",
+                "Name": "PhysicsComponent",
+                "Enabled": "true",
+                "CollisionType": "Sphere"
+            },
+            {
+                "Type": "ScriptComponent",
+                "Name": "ScriptComponent",
+                "Enabled": "true",
+                "Script": "myscript",
+                "SomeValue": "15.122169"
+            }
+        ],
+        "Children": []
+    },
+    {
+        "Type": "GameObject",
+        "Name": "Object19",
+        "Position": {
+            "Type": "Vector3",
+            "x": "-94.324966",
+            "y": "80.334702",
+            "z": "-14.700523"
+        },
+        "Components": [
+            {
+                "Type": "RenderComponent",
+                "Name": "RenderComponent",
+                "Enabled": "true",
+                "Mesh": {
+                    "Type": "RenderMesh"
+                }
+            },
+            {
+                "Type": "ScriptComponent",
+                "Name": "ScriptComponent",
+                "Enabled": "true",
+                "Script": "myscript",
+                "SomeValue": "8.410902"
+            }
+        ],
+        "Children": [
+            {
+                "Type": "GameObject",
+                "Name": "Object20",
+                "Position": {
+                    "Type": "Vector3",
+                    "x": "-81.565277",
+                    "y": "-67.560287",
+                    "z": "-85.787285"
+                },
+                "Components": [
+                    {
+                        "Type": "RenderComponent",
+                        "Name": "RenderComponent",
+                        "Enabled": "true",
+                        "Mesh": {
+                            "Type": "RenderMesh"
+                        }
+                    },
+                    {
+                        "Type": "PhysicsComponent",
+                        "Name": "PhysicsComponent",
+                        "Enabled": "true",
+                        "CollisionType": "AABB"
+                    },
+                    {
+                        "Type": "ScriptComponent",
+                        "Name": "ScriptComponent",
+                        "Enabled": "true",
+                        "Script": "myscript",
+                        "SomeValue": "14.087627"
+                    }
+                ],
+                "Children": []
+            },
+            {
+                "Type": "GameObject",
+                "Name": "Object21",
+                "Position": {
+                    "Type": "Vector3",
+                    "x": "-9.539970",
+                    "y": "61.788910",
+                    "z": "86.334885"
+                },
+                "Components": [
+                    {
+                        "Type": "RenderComponent",
+                        "Name": "RenderComponent",
+                        "Enabled": "true",
+                        "Mesh": {
+                            "Type": "RenderMesh"
+                        }
+                    },
+                    {
+                        "Type": "PhysicsComponent",
+                        "Name": "PhysicsComponent",
+                        "Enabled": "true",
+                        "CollisionType": "AABB"
+                    },
+                    {
+                        "Type": "ScriptComponent",
+                        "Name": "ScriptComponent",
+                        "Enabled": "true",
+                        "Script": "myscript",
+                        "SomeValue": "27.382355"
+                    }
+                ],
+                "Children": []
+            },
+            {
+                "Type": "GameObject",
+                "Name": "Object22",
+                "Position": {
+                    "Type": "Vector3",
+                    "x": "-5.747536",
+                    "y": "1.191177",
+                    "z": "20.078743"
+                },
+                "Components": [
+                    {
+                        "Type": "RenderComponent",
+                        "Name": "RenderComponent",
+                        "Enabled": "true",
+                        "Mesh": {
+                            "Type": "RenderMesh"
+                        }
+                    },
+                    {
+                        "Type": "PhysicsComponent",
+                        "Name": "PhysicsComponent",
+                        "Enabled": "true",
+                        "CollisionType": "AABB"
+                    },
+                    {
+                        "Type": "ScriptComponent",
+                        "Name": "ScriptComponent",
+                        "Enabled": "true",
+                        "Script": "myscript",
+                        "SomeValue": "16.422588"
+                    }
+                ],
+                "Children": []
+            },
+            {
+                "Type": "GameObject",
+                "Name": "Object23",
+                "Position": {
+                    "Type": "Vector3",
+                    "x": "64.939468",
+                    "y": "37.796188",
+                    "z": "40.441330"
+                },
+                "Components": [
+                    {
+                        "Type": "RenderComponent",
+                        "Name": "RenderComponent",
+                        "Enabled": "true",
+                        "Mesh": {
+                            "Type": "RenderMesh"
+                        }
+                    },
+                    {
+                        "Type": "CollisionComponent",
+                        "Name": "CollisionComponent",
+                        "Enabled": "true",
+                        "CollisionType": "Sphere",
+                        "CollisionResonse": "Hard"
+                    },
+                    {
+                        "Type": "ScriptComponent",
+                        "Name": "ScriptComponent",
+                        "Enabled": "true",
+                        "Script": "myscript",
+                        "SomeValue": "7.689282"
+                    }
+                ],
+                "Children": []
+            }
+        ]
+    },
+    {
+        "Type": "GameObject",
+        "Name": "Object24",
+        "Position": {
+            "Type": "Vector3",
+            "x": "-17.194298",
+            "y": "15.343330",
+            "z": "75.313141"
+        },
+        "Components": [
+            {
+                "Type": "CollisionComponent",
+                "Name": "CollisionComponent",
+                "Enabled": "true",
+                "CollisionType": "Sphere",
+                "CollisionResonse": "Bouncy"
+            },
+            {
+                "Type": "ScriptComponent",
+                "Name": "ScriptComponent",
+                "Enabled": "true",
+                "Script": "myscript",
+                "SomeValue": "24.284615"
+            }
+        ],
+        "Children": []
+    }
+]

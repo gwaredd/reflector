@@ -6,7 +6,6 @@
 #include <vector>
 #include <string>
 
-#include "gw/gw.h"
 #include "gwRTTI/gwRTTI.h"
 {{~ it.data.includes : inc }}#include "{{= inc }}"
 {{~}}
@@ -18,6 +17,7 @@ using namespace gw::RTTI;
 {{~ it.data.misc : t }}
 gwRTTI_REGISTER( {{= t }} );{{~}}
 {{?}}
+{{# def.extra }}
 {{~ it.data.classes : decl }}
 ////////////////////////////////////////////////////////////////////////////////
 // {{= decl.name }}

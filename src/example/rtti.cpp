@@ -1,12 +1,11 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Automatically generated RTTI information
 // source  : example.json
-// date    : Mon Dec 21 2015 16:11:42 GMT+0000 (GMT)
+// date    : Mon Dec 21 2015 22:34:39 GMT+0000 (GMT)
 
 #include <vector>
 #include <string>
 
-#include "gw/gw.h"
 #include "gwRTTI/gwRTTI.h"
 #include "classes.h"
 
@@ -24,9 +23,24 @@ gwRTTI_REGISTER( unsigned int );
 gwRTTI_REGISTER( float );
 gwRTTI_REGISTER( double );
 gwRTTI_REGISTER( std::string );
-gwRTTI_REGISTER( RenderMesh * );
-gwRTTI_REGISTER( std::vector<Component *> );
-gwRTTI_REGISTER( std::vector<GameObject *> );
+gwRTTI_REGISTER( RenderMesh );
+
+
+////////////////////////////////////////////////////////////////////////////////
+// extras ...
+
+template<> void TypeInfoImpl< std::string >::Create()
+{
+    ToString = []( void* obj, char* buf, int size )
+    {
+        if( buf && size > 0 )
+        {
+            *buf = '\0';
+        }
+
+        return obj ? ((std::string*)obj)->c_str() : buf;
+    };
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -156,7 +170,8 @@ template<> void TypeInfoImpl< RenderComponent >::Create()
     // 2. Mesh
 
     p[ 2 ].Name     = "Mesh";
-    p[ 2 ].Info     = Type< RenderMesh * >();
+    p[ 2 ].Info     = Type< RenderMesh >();
+    p[ 2 ].IsPointer= true;
     p[ 2 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<RenderComponent*>(o)->Mesh; };
     
 
@@ -441,15 +456,43 @@ template<> void TypeInfoImpl< GameObject >::Create()
     // 2. Components
 
     p[ 2 ].Name     = "Components";
-    p[ 2 ].Info     = Type< std::vector<Component *> >();
+    p[ 2 ].Info     = Type< Component >();
     p[ 2 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<GameObject*>(o)->Components; };
+    p[ 2 ].IsArray  = true;
+    p[ 2 ].Iterator = []( void* o ) -> std::function< std::pair< void*,const TypeInfo* >() >
+    {
+        auto obj = reinterpret_cast<GameObject*>(o);
+        auto itr = std::begin( obj->Components );
+        auto end = std::end( obj->Components );
+
+        return [=]() mutable -> std::pair< void*,const TypeInfo* >
+        {
+            if( itr == end ) return std::make_pair( nullptr, nullptr );
+            auto cur = *itr++;
+            return std::make_pair( cur, cur->GetType() );
+        };
+    };
     
 
     // 3. Children
 
     p[ 3 ].Name     = "Children";
-    p[ 3 ].Info     = Type< std::vector<GameObject *> >();
+    p[ 3 ].Info     = this;
     p[ 3 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<GameObject*>(o)->Children; };
+    p[ 3 ].IsArray  = true;
+    p[ 3 ].Iterator = []( void* o ) -> std::function< std::pair< void*,const TypeInfo* >() >
+    {
+        auto obj = reinterpret_cast<GameObject*>(o);
+        auto itr = std::begin( obj->Children );
+        auto end = std::end( obj->Children );
+
+        return [=]() mutable -> std::pair< void*,const TypeInfo* >
+        {
+            if( itr == end ) return std::make_pair( nullptr, nullptr );
+            auto cur = *itr++;
+            return std::make_pair( cur, cur->GetType() );
+        };
+    };
     
 
     // set fields

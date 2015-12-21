@@ -6,6 +6,8 @@
 #include <vector>
 #include <stdlib.h>
 
+#include "gwRTTI/gwRTTI.h"
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // utility
@@ -50,6 +52,8 @@ struct Vector3
 
 class Component
 {
+    gwRTTI( Component );
+    
     public:
     
         std::string Name;
@@ -67,6 +71,8 @@ class Component
 
 class RenderComponent : public Component
 {
+    gwRTTI( RenderComponent );
+    
     public:
     
         RenderMesh* Mesh; // unreflected 'opaque' class
@@ -80,6 +86,7 @@ class RenderComponent : public Component
         RenderComponent()
             : Mesh( nullptr )
         {
+            Name = "RenderComponent";
         }
     
         virtual ~RenderComponent()
@@ -90,6 +97,8 @@ class RenderComponent : public Component
 
 class PhysicsComponent : public Component
 {
+    gwRTTI( PhysicsComponent );
+    
     public:
     
         enum Type
@@ -103,12 +112,15 @@ class PhysicsComponent : public Component
     
         PhysicsComponent()
         {
+            Name = "PhysicsComponent";
             CollisionType = Type( rand() % 3 );
         }
 };
 
 class CollisionComponent : public PhysicsComponent
 {
+    gwRTTI( CollisionComponent );
+    
     public:
     
         enum Response
@@ -122,12 +134,15 @@ class CollisionComponent : public PhysicsComponent
     
         CollisionComponent()
         {
+            Name = "CollisionComponent";
             CollisionResonse = Response( rand() % 3 );
         }
 };
 
 class ScriptComponent : public Component
 {
+    gwRTTI( ScriptComponent );
+    
     public:
     
         std::string Script;
@@ -139,9 +154,11 @@ class ScriptComponent : public Component
         float       InternalValue;
     
         ScriptComponent()
-            : SomeValue( FRand( 5.f, 31.f ) )
+            : Script( "myscript" )
+            , SomeValue( FRand( 5.f, 31.f ) )
             , InternalValue( -999.f )
         {
+            Name = "ScriptComponent";
         }
 };
 
@@ -153,13 +170,15 @@ class ScriptComponent : public Component
 
 class GameObject
 {
+    gwRTTI( GameObject );
+    
     public:
     
         std::string                 Name;
         Vector3                     Position;
         std::vector<Component*>     Components;
         std::vector<GameObject*>    Children;
-    
+   
         virtual ~GameObject()
         {
             for( auto component : Components )
@@ -173,7 +192,16 @@ class GameObject
             }
         }
     
+    private:
+    
+        float SecretValue;
+    
     public:
+    
+        GameObject()
+            : SecretValue( 64.f )
+        {
+        }
     
         GameObject* CreateRandom( bool = true );
 };

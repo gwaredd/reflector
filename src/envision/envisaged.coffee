@@ -40,14 +40,49 @@ module.exports = ( file_in ) ->
   includes = _.filter includes, (filename) -> filename.toLowerCase().indexOf( ".h" ) > 0
 
 
-  #-------------------------------------------------------------------------------
-  # TODO: process field types
 
-  # reflector returns the declared type as shown in the source, depending on our types
-  # we may want to convert them here to something more RTTI friendly (sufficient for protoype though)
-  #
-  # e.g. char[32] -> char*
-  #
+  #-------------------------------------------------------------------------------
+  # remove private fields (we don't want to reflect these)
+
+  _.each data, (current) ->
+    return unless current.fields?
+    current.fields = _.filter current.fields, (f) -> f.access != "private"
+
+
+  #-------------------------------------------------------------------------------
+  # array and pointer field types
+
+  _.each data, (current) ->
+
+    return unless current.fields?
+
+    for f in current.fields
+
+      if f.type.indexOf( "std::vector" ) == 0
+
+        s = f.type.indexOf( "<" ) + 1
+        e = f.type.indexOf ">"
+
+        type = f.type.substr( s, e - s )
+        p = type.indexOf " *"
+
+        if p > 0
+          f.type      = type.substr 0, p
+          f.iterator  = "vector*"
+        else
+          f.type      = type
+          f.iterator  = "vector"
+
+        f.type = "this" if f.type == current.name
+
+      else if f.type.indexOf( "[" ) >= 0
+
+        console.log "[WARNING]".magenta, "array types not supported .. should write an iterator here! :)"
+
+      else if f.type.indexOf( " *" ) > 0
+
+        f.type    = f.type.substr 0, f.type.indexOf( " *" )
+        f.pointer = true
 
 
   #-------------------------------------------------------------------------------
@@ -57,12 +92,8 @@ module.exports = ( file_in ) ->
     "bool",
     "char",
     "unsigned char",
-    # "short",
-    # "unsigned short",
     "int",
     "unsigned int",
-    # "long",
-    # "unsigned long",
     "float",
     "double",
   ]
@@ -75,6 +106,7 @@ module.exports = ( file_in ) ->
 
       # if not standard type, seen already or in the json then add to list of "misc"
 
+      continue if field.type == "this"
       continue if _.contains misc, field.type
       continue if _.find data, (f) -> f.name == field.type
 

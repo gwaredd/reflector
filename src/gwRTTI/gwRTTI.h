@@ -2,13 +2,33 @@
 
 #pragma once
 
+#include <string>
 #include <map>
-#include "gw/gw.h"
-#include "gwl/gwStringRef.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifdef gwDLL
+#if defined( _MSC_VER )
+
+    #include <stdint.h> // for uint8_t etc
+
+    #define gwDLL_EXPORT __declspec( dllexport )
+    #define gwDLL_IMPORT __declspec( dllimport )
+
+#elif defined( __GNUC__ )
+
+    #include <inttypes.h>
+    #include <stdlib.h>
+
+    #define gwDLL_EXPORT __attribute__ ((visibility ("default")))
+    #define gwDLL_IMPORT __attribute__ ((visibility ("default")))
+
+#else
+
+    #error unknown compiler
+
+#endif
+
+#ifdef _USRDLL
     #ifdef GWRTTI_EXPORTS
         #define GWRTTI_API gwDLL_EXPORT
     #else
@@ -19,6 +39,7 @@
 #endif
 
 
+
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace gw
@@ -26,6 +47,8 @@ namespace gw
     namespace RTTI
     {
         struct TypeInfo;
+        
+        extern const char* __ValueTypeToString( const TypeInfo* type, void* obj, char* buffer, int size );
         
         ////////////////////////////////////////////////////////////////////////////////
         
@@ -53,8 +76,12 @@ namespace gw
             
             Attr*           Attrs;
             int             NumAttrs;
-            bool            IsPointer;
-
+            
+            bool IsPointer:1;
+            bool IsArray:1;
+            
+            std::function< std::pair<void*,const TypeInfo*>() > (*Iterator)( void* );
+                        
             Field()
                 : Get( nullptr )
                 , Name( nullptr )
@@ -62,6 +89,8 @@ namespace gw
                 , Attrs( nullptr )
                 , NumAttrs( 0 )
                 , IsPointer( false )
+                , IsArray( false )
+                , Iterator( nullptr )
             {
             }
         };
@@ -74,18 +103,18 @@ namespace gw
             bool    IsA( const TypeInfo* ) const;
             void*   GetField( void*, const char* ) const;
 
-            unsigned int    UID;        // internal unique identifier
-            std::string     Name;       // name
-            uint64_t        Hash;       // djb2 hash of name
-            void* (*Instantiate)();     // instantiate function
+            unsigned int    UID;                    // internal unique identifier
+            std::string     Name;                   // name
+            uint64_t        Hash;                   // djb2_64 hash of name
+            
+            void* (*Instantiate)();                 // instantiate function
+            const char* (*ToString)( void*, char*, int );
             
             // potentially useful(!?) things we can infer from the type
 
             bool            IsFundamental:1;
-            bool            IsClass:1;
-            bool            IsPOD:1;
             bool            IsEnum:1;
-            bool            IsPointer:1;
+            bool            IsPOD:1;
 
             const TypeInfo** Inherits;  // base classes
             
@@ -101,12 +130,11 @@ namespace gw
                 : UID( 0 )
                 , Hash( ~0 )
                 , Instantiate( nullptr )
+                , ToString( nullptr )
 
                 , IsFundamental( false )
-                , IsClass( false )
-                , IsPOD( false )
                 , IsEnum( false )
-                , IsPointer( false )
+                , IsPOD( false )
 
                 , Inherits( nullptr )
                 , Fields( nullptr )
@@ -141,7 +169,7 @@ namespace gw
                 }
 
                 unsigned int mID;
-                std::map< StringRef, TypeInfo > mTypes; // using StringRef's here to save memory allocation / fast lookup
+                std::map< std::string, TypeInfo > mTypes;
         };
 
 
@@ -173,7 +201,7 @@ namespace gw
                     // first call we fetch from registry - this is because of memory is local to "shared boundaries"
                     // (i.e. Windows DLL's). This isn't a problem if the library is statically linked
                     
-                    #ifdef gwCOMPILER_MSVC
+                    #ifdef _MSC_VER
                         TypeInfo* info = gw::RTTI::Registry::Instance().FindOrCreate( __FUNCSIG__ );
                     #else
                         TypeInfo* info = gw::RTTI::Registry::Instance().FindOrCreate( __PRETTY_FUNCTION__ );
@@ -181,12 +209,15 @@ namespace gw
                     
                     auto p = reinterpret_cast< TypeInfoImpl<T>* >( const_cast<TypeInfo*>( info ) );
 
-                    p->Instantiate     = std::is_constructible<T>::value ? []() -> void* { return new T(); } : nullptr;
-                    p->IsFundamental   = std::is_fundamental<T>::value;
-                    p->IsClass         = std::is_class<T>::value;
-                    p->IsPOD           = std::is_pod<T>::value;
-                    p->IsEnum          = std::is_enum<T>::value;
-                    p->IsPointer       = std::is_pointer<T>::value;
+                    p->Instantiate      = std::is_constructible<T>::value ? []() -> void* { return new T(); } : nullptr;
+                    p->IsFundamental    = std::is_fundamental<T>::value;
+                    p->IsEnum           = std::is_enum<T>::value;
+                    p->IsPOD            = std::is_pod<T>::value;
+                    
+                    if( std::is_enum<T>::value || std::is_fundamental<T>::value )
+                    {
+                        p->ToString = []( void* obj, char* buf, int size ){ return __ValueTypeToString( TypeInfoImpl<T>::Class(), obj, buf, size ); };
+                    }
 
                     p->Create();
 
@@ -235,7 +266,7 @@ namespace gw
 
         #define gwRTTI(T) \
             public: \
-                virtual const gw::RTTI::TypeInfo* Type() const { return gw::RTTI::Type( this ); } \
+                virtual const gw::RTTI::TypeInfo* GetType() const { return gw::RTTI::Type( this ); } \
                 friend void gw::RTTI::TypeInfoImpl<T>::Create();
 
 

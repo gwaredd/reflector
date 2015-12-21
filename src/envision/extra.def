@@ -1,0 +1,16 @@
+
+////////////////////////////////////////////////////////////////////////////////
+// extras ...
+
+template<> void TypeInfoImpl< std::string >::Create()
+{
+    ToString = []( void* obj, char* buf, int size )
+    {
+        if( buf && size > 0 )
+        {
+            *buf = '\0';
+        }
+
+        return obj ? ((std::string*)obj)->c_str() : buf;
+    };
+}

@@ -7,6 +7,9 @@ namespace gw
 {
     namespace RTTI
     {
+        ////////////////////////////////////////////////////////////////////////////////
+        // quick string hashing function
+        
         static uint64_t DJB2_64( const char* str )
         {
             uint64_t hash = 5381;
@@ -23,6 +26,95 @@ namespace gw
         }
         
 
+        ////////////////////////////////////////////////////////////////////////////////
+        
+        static const char* __EnumTypeToString( const TypeInfo* type, void* obj, char* buffer, int size )
+        {
+            // look up value
+            
+            int value = *((int*)obj);
+            
+            if( type->Constants )
+            {
+                auto c = type->Constants;
+                auto i = type->NumMembers;
+                
+                while( i-- )
+                {
+                    if( c->Value == value )
+                    {
+                        return c->Name;
+                    }
+                    
+                    ++c;
+                }
+            }
+            
+            sprintf( buffer, "%i", value );
+            return buffer;
+        }
+        
+        ////////////////////////////////////////////////////////////////////////////////
+        
+        const char* __ValueTypeToString( const TypeInfo* type, void* obj, char* buffer, int size )
+        {
+            // validate params
+            
+            if( buffer == nullptr || size <= 0 )
+            {
+                return nullptr;
+            }
+            
+            *buffer = '\0';
+            
+            if( obj == nullptr || type == nullptr )
+            {
+                return buffer;
+            }
+            
+            if( type->IsEnum )
+            {
+                return __EnumTypeToString( type, obj, buffer, size );
+            }
+            else if( type->IsFundamental )
+            {
+                // convert fundamental to string
+                
+                switch( type->Hash )
+                {
+                    case 0x000000017C94B391: // bool
+                        sprintf( buffer, "%s", *((bool*)obj) ? "true" : "false" );
+                        break;
+                        
+                    case 0x000000017C952063: // char
+                        sprintf( buffer, "%c", *((char*)obj) );
+                        break;
+                        
+                    case 0x6A011564F9CBA7A0: // unsigned char
+                        sprintf( buffer, "%u", *((unsigned char*)obj) );
+                        break;
+                        
+                    case 0x000000000B888030: // int
+                        sprintf( buffer, "%i", *((int*)obj) );
+                        break;
+                        
+                    case 0xDC6CA38EB23C93CD: // unsigned int
+                        sprintf( buffer, "%u", *((unsigned int*)obj) );
+                        break;
+                        
+                    case 0x000000310F71E19B: // float
+                        sprintf( buffer, "%f", *((float*)obj) );
+                        break;
+                        
+                    case 0x00000652F93D5B20: // double
+                        sprintf( buffer, "%lf", *((double*)obj) );
+                        break;
+                }
+            }
+
+            return buffer;
+        }
+        
         
         ////////////////////////////////////////////////////////////////////////////////
         
@@ -43,6 +135,9 @@ namespace gw
             
             return false;
         }
+        
+        
+        ////////////////////////////////////////////////////////////////////////////////
         
         void* TypeInfo::GetField( void* obj, const char* name ) const
         {
@@ -91,14 +186,14 @@ namespace gw
         {
             // extract type name from function signature
             
-            StringRef name;
+            std::string name;
             
             auto start = strchr( func, '<' );
             
             if( start )
             {
                 auto end = strchr( ++start, '>' );
-                name = end ? StringRef( start, end ) : func;
+                name = end ? std::string( start, end - start ) : func;
             }
             else
             {
@@ -118,7 +213,7 @@ namespace gw
             
             auto info = &mTypes[ name ];
             
-            info->Name  = std::string( name );
+            info->Name  = name;
             info->UID   = ++mID;
             info->Hash  = DJB2_64( info->Name.c_str() );
             
@@ -126,30 +221,4 @@ namespace gw
         }
     }
 }
-
-//gwRTTI_REGISTER( bool );
-//gwRTTI_REGISTER( char );
-//gwRTTI_REGISTER( unsigned char );
-//gwRTTI_REGISTER( short );
-//gwRTTI_REGISTER( int );
-//gwRTTI_REGISTER( unsigned int );
-//gwRTTI_REGISTER( float );
-//gwRTTI_REGISTER( double );
-
-
-//        int32_t Object::* pointer_to_member_variable = &Object::m_Member;
-//        // These are typically dereferenced with an instance of the object
-//        // type (just like member function pointers):
-//        Object object, *pointer = new Object;
-//        int32_t value1 = object.*pointer_to_member_variable;
-//        int32_t value2 = pointer->*pointer_to_member_variable;
-//
-//        // To compute the offset from a pointer to a member variable
-//        template< class ObjectT, class DataT >
-//        uint32_t GetFieldOffset( ObjectT DataT::* field )
-//        {
-//            // a pointer-to-member is really just an offset value
-//            // disguised by the compiler
-//            return (uint32_t) (uintptr_t) &( ((ObjectT*)NULL)->*field );
-//        }
 
