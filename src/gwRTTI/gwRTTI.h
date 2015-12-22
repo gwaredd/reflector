@@ -13,17 +13,17 @@
 
     #include <stdint.h> // for uint64_t
 
-    #define gwDLL_EXPORT __declspec( dllexport )
-    #define gwDLL_IMPORT __declspec( dllimport )
-
-    #define gw_stricmp _stricmp
+    #define gwDLL_EXPORT        __declspec( dllexport )
+    #define gwDLL_IMPORT        __declspec( dllimport )
+    #define gwRTTI_FUNCSIG      __FUNCSIG__
+    #define gw_stricmp          _stricmp
 
 #elif defined( __GNUC__ )
 
-    #define gwDLL_EXPORT __attribute__ ((visibility ("default")))
-    #define gwDLL_IMPORT __attribute__ ((visibility ("default")))
-
-    #define gw_stricmp strcasecmp
+    #define gwDLL_EXPORT        __attribute__ ((visibility ("default")))
+    #define gwDLL_IMPORT        __attribute__ ((visibility ("default")))
+    #define gwRTTI_FUNCSIG      __PRETTY_FUNCTION__
+    #define gw_stricmp          strcasecmp
 
 #else
 
@@ -148,6 +148,7 @@ namespace gw
             
             // type hints
             
+            bool                IsInstantiated:1;   // set to true after registration
             bool                IsFundamental:1;
             bool                IsEnum:1;
             bool                IsPOD:1;
@@ -168,6 +169,7 @@ namespace gw
                 , Attrs( nullptr )
                 , NumAttrs( 0 )
             
+                , IsInstantiated( false )
                 , IsFundamental( false )
                 , IsEnum( false )
                 , IsPOD( false )
@@ -181,12 +183,12 @@ namespace gw
         // registry should be safe accross shared boundaries (windows DLL's)
         
         extern GWRTTI_API const TypeInfo* Find( const char* );
-        extern GWRTTI_API const TypeInfo* Create( const char* );
+        extern GWRTTI_API const TypeInfo* FindOrCreate( const char* );
 
 
         ////////////////////////////////////////////////////////////////////////////////
         // TypeInfo specialisation
-        
+
         template< typename T >
         struct TypeInfoImpl : public TypeInfo
         {
@@ -195,77 +197,54 @@ namespace gw
                 // specialise Create() to provide custom type implementation
                 void Create() {}
 
-                static const TypeInfo* Class()
+                static const TypeInfo* GetType()
                 {
-                    // first call instantiates the type (which should be from a gwRTTI_REGISTER)
-                    static const TypeInfo* info = CreateTypeInfo();
-                    return info;
-                }
-
-
-            protected:
-            
-                // instantiate type
-            
-                static const TypeInfo* CreateTypeInfo()
-                {
-                    // get type name
-                    
-                    extern std::string ExtractName( const char* );
-                    
-                    #ifdef _MSC_VER
-                        auto name = ExtractName( __FUNCSIG__ );
-                    #else
-                        auto name = ExtractName( __PRETTY_FUNCTION__ );
-                    #endif
-                    
-                    // return existing entry if it exists
-                    
-                    auto info = gw::RTTI::Find( name.c_str() );
-                    
-                    if( info == nullptr )
-                    {
-                        // create it if it doesn't
-                        
-                        info = gw::RTTI::Create( name.c_str() );
-                        
-                        // set some default values
-                        
-                        auto p = reinterpret_cast< TypeInfoImpl<T>* >( const_cast<TypeInfo*>( info ) );
-
-                        p->Instantiate      = std::is_constructible<T>::value ? []() -> void* { return new T(); } : nullptr;
-                        p->IsFundamental    = std::is_fundamental<T>::value;
-                        p->IsEnum           = std::is_enum<T>::value;
-                        p->IsPOD            = std::is_pod<T>::value;
-                        
-                        if( std::is_enum<T>::value || std::is_fundamental<T>::value )
-                        {
-                            extern const char* ValueTypeToString( const TypeInfo* type, void* obj, char* buffer, int size );
-                            extern bool ValueTypeFromString( const TypeInfo* type, void* obj, const char* buffer );
-                            
-                            p->ToString   = []( void* obj, char* buf, int size ) { return ValueTypeToString( TypeInfoImpl<T>::Class(), obj, buf, size ); };
-                            p->FromString = []( void* obj, const char* buf )     { return ValueTypeFromString( TypeInfoImpl<T>::Class(), obj, buf ); };
-                        }
-                        
-                        // now call custom type instantiation
-
-                        p->Create();
-                    }
-
+                    static const TypeInfo* info = FindOrCreate( gwRTTI_FUNCSIG );
                     return info;
                 }
         };
 
 
         ////////////////////////////////////////////////////////////////////////////////
-        // register type during global ctor initialisation
+        // register type during global ctor initialisation - we do our custom setup here
 
         template<typename T>
         struct Register
         {
             Register()
             {
-                TypeInfoImpl<T>::Class();
+                // create generic entry
+                
+                auto generic_info = TypeInfoImpl<T>::GetType();
+                
+                // now fill in with custom value
+                
+                auto info = reinterpret_cast< TypeInfoImpl<T>* >( const_cast<TypeInfo*>( generic_info ) );
+                
+                // set some default values we can infer from type
+                
+                info->Instantiate       = std::is_constructible<T>::value ? []() -> void* { return new T(); } : nullptr;
+                info->IsFundamental     = std::is_fundamental<T>::value;
+                info->IsEnum            = std::is_enum<T>::value;
+                info->IsPOD             = std::is_pod<T>::value;
+                
+                if( std::is_enum<T>::value || std::is_fundamental<T>::value )
+                {
+                    extern const char* ValueTypeToString( const TypeInfo* type, void* obj, char* buffer, int size );
+                    extern bool ValueTypeFromString( const TypeInfo* type, void* obj, const char* buffer );
+                    
+                    info->ToString   = []( void* obj, char* buf, int size ) { return ValueTypeToString( TypeInfoImpl<T>::GetType(), obj, buf, size ); };
+                    info->FromString = []( void* obj, const char* buf )     { return ValueTypeFromString( TypeInfoImpl<T>::GetType(), obj, buf ); };
+                }
+                
+                // now call custom type instantiation
+                
+                info->Create();
+                
+                
+                // flag as complete (useful if we're dynamically loading type info)
+                
+                info->IsInstantiated = true;
             }
         };
 
@@ -282,13 +261,13 @@ namespace gw
         template< typename T >
         inline const TypeInfo* Type()
         {
-            return TypeInfoImpl<T>::Class();
+            return TypeInfoImpl<T>::GetType();
         }
 
         template< typename T >
         inline const TypeInfo* Type( const T* )
         {
-            return TypeInfoImpl<T>::Class();
+            return TypeInfoImpl<T>::GetType();
         }
 
 
@@ -298,7 +277,7 @@ namespace gw
         #define gwRTTI( T ) \
             public: \
                 virtual const gw::RTTI::TypeInfo* GetType() const { return gw::RTTI::Type( this ); } \
-                static const gw::RTTI::TypeInfo* Class() { return gw::RTTI::Type<T>(); } \
+                static const gw::RTTI::TypeInfo* TypeInfo() { return gw::RTTI::Type<T>(); } \
                 friend struct gw::RTTI::TypeInfoImpl<T>; \
         
 

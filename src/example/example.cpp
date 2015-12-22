@@ -125,6 +125,8 @@ int main( int argc, char* argv[] )
     Load( filename );
     /**/
     
+    std::cout << "We have " << GameObjects.size() << " objects" << std::endl;
+    
     return 0;
 }
 

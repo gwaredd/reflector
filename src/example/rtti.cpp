@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Automatically generated RTTI information
 // source  : example.json
-// date    : Tue Dec 22 2015 13:38:46 GMT+0000 (GMT)
+// date    : Tue Dec 22 2015 19:58:07 GMT+0000 (GMT)
 
 #include <vector>
 #include <string>

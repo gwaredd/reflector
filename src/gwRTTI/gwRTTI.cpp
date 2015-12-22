@@ -8,6 +8,71 @@ namespace gw
     namespace RTTI
     {
         ////////////////////////////////////////////////////////////////////////////////
+        // quick string hashing function
+        
+        static uint64_t DJB2_64( const char* str )
+        {
+            uint64_t hash = 5381;
+            
+            if( str )
+            {
+                while( uint64_t c = (uint64_t) ( *str++ ) )
+                {
+                    hash = ((hash << 5) + hash) + c; // hash * 33 + c
+                }
+            }
+            
+            return hash;
+        }
+        
+        
+        ////////////////////////////////////////////////////////////////////////////////
+        // extract type name from function signature
+        
+        static std::string ExtractName( const char* func )
+        {
+            // function signatures look something like this ...
+            //  static const gw::RTTI::TypeInfo *gw::RTTI::TypeInfoImpl< std::string<char> >::Initialise()
+            
+            // extract the type from within the <>
+            
+            auto start = strchr( func, '<' );
+            
+            if( start )
+            {
+                // balance the <>
+                
+                auto end   = ++start;
+                auto count = 1;
+                
+                while( *end )
+                {
+                    if( *end == '<' )
+                    {
+                        ++count;
+                    }
+                    else if( *end == '>' )
+                    {
+                        if( --count == 0 )
+                        {
+                            break;
+                        }
+                    }
+                    
+                    ++end;
+                }
+                
+                if( *end )
+                {
+                    return std::string( start, end - start );
+                }
+            }
+            
+            return std::string( func );
+        }
+        
+        
+        ////////////////////////////////////////////////////////////////////////////////
         
         class Registry
         {
@@ -37,36 +102,68 @@ namespace gw
         
         Registry* Registry::sRegistry = nullptr;
         
+        
+        ////////////////////////////////////////////////////////////////////////////////
+        //
+        
         const TypeInfo* Find( const char* name )
         {
             return Registry::Instance()->Find( name );
         }
         
-        const TypeInfo* Create( const char* name )
+        const TypeInfo* FindOrCreate( const char* funcsig )
         {
-            return Registry::Instance()->Create( name );
+            auto name       = ExtractName( funcsig ).c_str();
+            auto registry   = Registry::Instance();
+            auto info       = registry->Find( name );
+            
+            return info ? info : registry->Create( name );
+        }
+
+        
+        ////////////////////////////////////////////////////////////////////////////////
+        
+        bool TypeInfo::IsA( const TypeInfo* type ) const
+        {
+            const TypeInfo** info = BaseClasses;
+
+            do
+            {
+                if( *info == type )
+                {
+                    return true;
+                }
+                
+                ++info;
+            }
+            while( *info );
+            
+            return false;
         }
         
         
         ////////////////////////////////////////////////////////////////////////////////
-        // quick string hashing function
-        
-        static uint64_t DJB2_64( const char* str )
+
+        const TypeInfo* Registry::Find( const char* name )
         {
-            uint64_t hash = 5381;
-            
-            if( str )
-            {
-                while( uint64_t c = (uint64_t) ( *str++ ) )
-                {
-                    hash = ((hash << 5) + hash) + c; // hash * 33 + c
-                }
-            }
-            
-            return hash;
+            auto itr = mTypes.find( name );
+            return itr != mTypes.end() ? &itr->second : nullptr;
         }
         
-
+        
+        ////////////////////////////////////////////////////////////////////////////////
+        
+        TypeInfo* Registry::Create( const char* name )
+        {
+            auto info = &mTypes[ name ];
+            
+            info->Name  = name;
+            info->Hash  = DJB2_64( name );
+            
+            return info;
+        }
+        
+        
         ////////////////////////////////////////////////////////////////////////////////
         // for convenience - standard conversion of value types to strings
         
@@ -156,10 +253,10 @@ namespace gw
             {
                 return FundamentalTypeToString( type, obj, buffer, size );
             }
-
+            
             return buffer;
         }
-
+        
         
         ////////////////////////////////////////////////////////////////////////////////
         // for convenience - standard conversion of strings -> value types
@@ -235,98 +332,6 @@ namespace gw
             }
             
             return false;
-        }
-        
-        
-        ////////////////////////////////////////////////////////////////////////////////
-        
-        bool TypeInfo::IsA( const TypeInfo* type ) const
-        {
-            const TypeInfo** info = BaseClasses;
-
-            do
-            {
-                if( *info == type )
-                {
-                    return true;
-                }
-                
-                ++info;
-            }
-            while( *info );
-            
-            return false;
-        }
-        
-        
-        ////////////////////////////////////////////////////////////////////////////////
-
-        const TypeInfo* Registry::Find( const char* name )
-        {
-            auto itr = mTypes.find( name );
-            return itr != mTypes.end() ? &itr->second : nullptr;
-        }
-        
-        
-        ////////////////////////////////////////////////////////////////////////////////
-        // extract type name from function signature
-
-        std::string ExtractName( const char* func )
-        {
-            // function signatures look something like this ...
-            //  static const gw::RTTI::TypeInfo *gw::RTTI::TypeInfoImpl< std::string<char> >::Initialise()
-            
-            std::string name;
-            
-            // extract the type from within the <>
-            
-            auto start = strchr( func, '<' );
-            
-            if( start )
-            {
-                // balance the <>
-                
-                auto end   = ++start;
-                auto count = 1;
-                
-                while( *end )
-                {
-                    if( *end == '<' )
-                    {
-                        ++count;
-                    }
-                    else if( *end == '>' )
-                    {
-                        if( --count == 0 )
-                        {
-                            break;
-                        }
-                    }
-                    
-                    ++end;
-                }
-                
-                name = *end ? std::string( start, end - start ) : func;
-            }
-            else
-            {
-                name = func;
-            }
-            
-            return name;
-        }
-
-
-        ////////////////////////////////////////////////////////////////////////////////
-        
-        TypeInfo* Registry::Create( const char* name )
-        {
-            auto info = &mTypes[ name ];
-            
-            info->Name  = name;
-            info->Hash  = DJB2_64( name );
-            
-            return info;
         }
     }
 }
