@@ -52,7 +52,7 @@ On windows you may prefer to generate a Visual Studio project instead (`cmake -G
 
 If this all worked then the reflector binary should be here ... `build/bin/reflector`
 
-To test run
+To test reflector on some code ...
 
 ```bash
     ./bin/reflector ../tests/test.cpp
@@ -89,9 +89,9 @@ To run envision on some test data
 coffee envision.coffee ../../tests/test.json test_rtti.cpp
 ```
 
-Warnings are expected with this test file.
+***Warnings are expected with this test file.***
 
-This should create a test_rtti.cpp in the envision folder.
+This should create a `test_rtti.cpp` in the envision folder.
 
 Have fun, big love
 
