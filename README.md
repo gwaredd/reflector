@@ -1,7 +1,7 @@
 # reflector
 > A clang based tool for generating RTTI data from C/C++ code
 
-This is the accompanying prototype code for the accompanying blog post (coming soon ...).
+This is the accompanying prototype code for my blog post (coming soon ...).
 
 ## Getting Setup
 
