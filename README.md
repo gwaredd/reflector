@@ -9,7 +9,7 @@ This is the prototype code for the accompanying blog post (TBD).
 
 Reflector is a clang based tool, it requires the LLVM and Clang source tree. You can get more information on the [official site](http://clang.llvm.org/get_started.html).
 
-**NB:** For convenience, these instructions use the github mirror of the llvm/clang sources (the official site uses the subversion repository but both should be the same).
+**NB:** For convenience, I'm using the github mirror of the llvm/clang sources below if you're wondering why there's a difference with the official site.
 
 Requires [git](https://git-scm.com/) and [cmake](https://cmake.org/).
 
@@ -32,8 +32,11 @@ cd ../..
 ```
 git clone https://github.com/gwaredd/reflector.git
 ```
-
-This should copy the reflector project into `llvm/tools/clang/tools/reflector`
+Now move the reflector code into the clang tools source tree (`llvm/tools/clang/tools/reflector`). It will be build as part of the llvm project.
+```
+mv reflector/llvm/tools/clang/tools/reflector/ llvm/tools/clang/tools/
+```
+**NB:** use `move` on windows.
 
 **Make the things!**
 
@@ -55,7 +58,7 @@ If this all worked then the reflector binary should be here ... `build/bin/refle
 To test reflector on some code ...
 
 ```bash
-    ./bin/reflector ../tests/test.cpp
+    ./bin/reflector ../reflector/tests/test.cpp
 ```
 
 This should output JSON data to the stdout.
