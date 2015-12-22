@@ -46,7 +46,7 @@ module.exports = ( file_in ) ->
 
   _.each data, (current) ->
     return unless current.fields?
-    current.fields = _.filter current.fields, (f) -> f.access != "private"
+    current.fields = _.filter current.fields, (f) -> f.access == "public"
 
 
   #-------------------------------------------------------------------------------
@@ -73,7 +73,9 @@ module.exports = ( file_in ) ->
           f.type      = type
           f.iterator  = "vector"
 
-        f.type = "this" if f.type == current.name
+        if f.type == current.name
+          f.type = "this"
+          f.alttype = current.name
 
       else if f.type.indexOf( "[" ) >= 0
 

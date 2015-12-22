@@ -13,4 +13,26 @@ template<> void TypeInfoImpl< std::string >::Create()
 
         return obj ? ((std::string*)obj)->c_str() : buf;
     };
+
+    FromString = []( void* obj, const char* buf ) -> bool
+    {
+        if( obj == nullptr )
+        {
+            return false;
+        }
+
+        auto str = (std::string*)obj;
+
+        if( buf )
+        {
+            *str = buf;
+        }
+        else
+        {
+            str->empty();
+        }
+
+        return true;
+    };
 }
+

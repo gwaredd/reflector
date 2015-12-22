@@ -24,7 +24,7 @@ inline float FRand( float min, float max )
 class RenderMesh
 {
     public:
-    
+
         std::string Name;
 };
 
@@ -35,7 +35,7 @@ class RenderMesh
 struct Vector3
 {
     float x,y,z;
-    
+
     Vector3()
         : x( FRand( -100.f, 100.f ) )
         , y( FRand( -100.f, 100.f ) )
@@ -52,18 +52,18 @@ struct Vector3
 
 class Component
 {
-    gwRTTI( Component );
-    
+    gwRTTI;
+
     public:
-    
+
         std::string Name;
         bool        Enabled;
-    
+
         Component()
             : Enabled( true )
         {
         }
-    
+
         virtual ~Component()
         {
         }
@@ -71,24 +71,24 @@ class Component
 
 class RenderComponent : public Component
 {
-    gwRTTI( RenderComponent );
-    
+    gwRTTI;
+
     public:
-    
+
         RenderMesh* Mesh; // unreflected 'opaque' class
-    
+
         void LoadMesh( const char* name )
         {
             Mesh = new RenderMesh();
             Mesh->Name = name;
         }
-    
+
         RenderComponent()
             : Mesh( nullptr )
         {
             Name = "RenderComponent";
         }
-    
+
         virtual ~RenderComponent()
         {
             delete Mesh;
@@ -97,19 +97,19 @@ class RenderComponent : public Component
 
 class PhysicsComponent : public Component
 {
-    gwRTTI( PhysicsComponent );
-    
+    gwRTTI;
+
     public:
-    
+
         enum Type
         {
             Sphere,
             AABB,
             ConvexHull
         };
-    
+
         Type CollisionType;
-    
+
         PhysicsComponent()
         {
             Name = "PhysicsComponent";
@@ -119,19 +119,19 @@ class PhysicsComponent : public Component
 
 class CollisionComponent : public PhysicsComponent
 {
-    gwRTTI( CollisionComponent );
-    
+    gwRTTI;
+
     public:
-    
+
         enum Response
         {
             Bouncy,
             Hard,
             Soft
         };
-    
+
         Response CollisionResonse;
-    
+
         CollisionComponent()
         {
             Name = "CollisionComponent";
@@ -141,18 +141,18 @@ class CollisionComponent : public PhysicsComponent
 
 class ScriptComponent : public Component
 {
-    gwRTTI( ScriptComponent );
-    
+    gwRTTI;
+
     public:
-    
+
         std::string Script;
-    
+
         ///%% min=5, max=31
         float       SomeValue;
-    
+
         ///%! -- don't reflect this
         float       InternalValue;
-    
+
         ScriptComponent()
             : Script( "myscript" )
             , SomeValue( FRand( 5.f, 31.f ) )
@@ -170,40 +170,24 @@ class ScriptComponent : public Component
 
 class GameObject
 {
-    gwRTTI( GameObject );
-    
+    gwRTTI;
+
     public:
-    
+
         std::string                 Name;
         Vector3                     Position;
         std::vector<Component*>     Components;
         std::vector<GameObject*>    Children;
-   
-        virtual ~GameObject()
-        {
-            for( auto component : Components )
-            {
-                delete component;
-            }
-            
-            for( auto child : Children )
-            {
-                delete child;
-            }
-        }
-    
-    private:
-    
-        float SecretValue;
-    
-    public:
-    
-        GameObject()
-            : SecretValue( 64.f )
-        {
-        }
-    
+
+        GameObject();
+        virtual ~GameObject();
         GameObject* CreateRandom( bool = true );
+
+    private:
+
+        // private members are removed from the TypeInfo
+
+        float SecretValue;
 };
 
 

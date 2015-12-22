@@ -28,7 +28,7 @@ namespace gw
 
         ////////////////////////////////////////////////////////////////////////////////
         
-        static const char* __EnumTypeToString( const TypeInfo* type, void* obj, char* buffer, int size )
+        static const char* EnumTypeToString( const TypeInfo* type, void* obj, char* buffer, int size )
         {
             // look up value
             
@@ -54,9 +54,44 @@ namespace gw
             return buffer;
         }
         
-        ////////////////////////////////////////////////////////////////////////////////
+        static const char* FundamentalTypeToString( const TypeInfo* type, void* obj, char* buffer, int size )
+        {
+            switch( type->Hash )
+            {
+                case 0x000000017C94B391: // bool
+                    sprintf( buffer, "%s", *((bool*)obj) ? "true" : "false" );
+                    break;
+                    
+                case 0x000000017C952063: // char
+                    sprintf( buffer, "%c", *((char*)obj) );
+                    break;
+                    
+                case 0x6A011564F9CBA7A0: // unsigned char
+                    sprintf( buffer, "%hhu", *((unsigned char*)obj) );
+                    break;
+                    
+                case 0x000000000B888030: // int
+                    sprintf( buffer, "%i", *((int*)obj) );
+                    break;
+                    
+                case 0xDC6CA38EB23C93CD: // unsigned int
+                    sprintf( buffer, "%u", *((unsigned int*)obj) );
+                    break;
+                    
+                case 0x000000310F71E19B: // float
+                    sprintf( buffer, "%f", *((float*)obj) );
+                    break;
+                    
+                case 0x00000652F93D5B20: // double
+                    sprintf( buffer, "%lf", *((double*)obj) );
+                    break;
+            }
+            
+            return buffer;
+        }
         
-        const char* __ValueTypeToString( const TypeInfo* type, void* obj, char* buffer, int size )
+        
+        const char* ValueTypeToString( const TypeInfo* type, void* obj, char* buffer, int size )
         {
             // validate params
             
@@ -74,45 +109,90 @@ namespace gw
             
             if( type->IsEnum )
             {
-                return __EnumTypeToString( type, obj, buffer, size );
+                return EnumTypeToString( type, obj, buffer, size );
             }
             else if( type->IsFundamental )
             {
-                // convert fundamental to string
-                
-                switch( type->Hash )
-                {
-                    case 0x000000017C94B391: // bool
-                        sprintf( buffer, "%s", *((bool*)obj) ? "true" : "false" );
-                        break;
-                        
-                    case 0x000000017C952063: // char
-                        sprintf( buffer, "%c", *((char*)obj) );
-                        break;
-                        
-                    case 0x6A011564F9CBA7A0: // unsigned char
-                        sprintf( buffer, "%u", *((unsigned char*)obj) );
-                        break;
-                        
-                    case 0x000000000B888030: // int
-                        sprintf( buffer, "%i", *((int*)obj) );
-                        break;
-                        
-                    case 0xDC6CA38EB23C93CD: // unsigned int
-                        sprintf( buffer, "%u", *((unsigned int*)obj) );
-                        break;
-                        
-                    case 0x000000310F71E19B: // float
-                        sprintf( buffer, "%f", *((float*)obj) );
-                        break;
-                        
-                    case 0x00000652F93D5B20: // double
-                        sprintf( buffer, "%lf", *((double*)obj) );
-                        break;
-                }
+                return FundamentalTypeToString( type, obj, buffer, size );
             }
 
             return buffer;
+        }
+
+        
+        ////////////////////////////////////////////////////////////////////////////////
+        
+        static bool EnumTypeFromString( const TypeInfo* type, void* obj, const char* buffer )
+        {
+            auto pValue = (int*)obj;
+            
+            if( type->Constants )
+            {
+                auto c = type->Constants;
+                auto i = type->NumMembers;
+                
+                while( i-- )
+                {
+                    if( gw_stricmp( buffer, c->Name ) == 0 )
+                    {
+                        *pValue = c->Value;
+                        return true;
+                    }
+                    
+                    ++c;
+                }
+            }
+            
+            return sscanf( buffer, "%u", pValue ) == 1;
+        }
+        
+        static bool FundamentalTypeFromString( const TypeInfo* type, void* obj, const char* buffer )
+        {
+            switch( type->Hash )
+            {
+                case 0x000000017C94B391: // bool
+                    *((bool*)obj) = gw_stricmp( buffer, "true" ) == 0;
+                    return true;
+                    
+                case 0x000000017C952063: // char
+                    return sscanf( buffer, "%c", (char*)obj ) == 1;
+                    
+                case 0x6A011564F9CBA7A0: // unsigned char
+                    return sscanf( buffer, "%hhu", (unsigned char*)obj ) == 1;
+                    
+                case 0x000000000B888030: // int
+                    return sscanf( buffer, "%i", (int*)obj ) == 1;
+                    
+                case 0xDC6CA38EB23C93CD: // unsigned int
+                    return sscanf( buffer, "%u", (int*)obj ) == 1;
+                    
+                case 0x000000310F71E19B: // float
+                    return sscanf( buffer, "%f", (float*)obj ) == 1;
+                    
+                case 0x00000652F93D5B20: // double
+                    return sscanf( buffer, "%lf", (double*)obj ) == 1;
+            }
+            
+            return false;
+        }
+        
+        bool ValueTypeFromString( const TypeInfo* type, void* obj, const char* buffer )
+        {
+            if( type == nullptr || obj == nullptr || buffer == nullptr )
+            {
+                return false;
+            }
+            
+            if( type->IsEnum )
+            {
+                return EnumTypeFromString( type, obj, buffer );
+            }
+            else if( type->IsFundamental )
+            {
+                return FundamentalTypeFromString( type, obj, buffer );
+            }
+            
+            return false;
         }
         
         
@@ -168,15 +248,6 @@ namespace gw
         {
             auto itr = mTypes.find( name );
             return itr != mTypes.end() ? &itr->second : nullptr;
-        }
-        
-
-        ////////////////////////////////////////////////////////////////////////////////
-        
-        void* Registry::Instantiate( const char* name  )
-        {
-            auto info = Find( name );
-            return info && info->Instantiate ? info->Instantiate() : nullptr;
         }
         
 

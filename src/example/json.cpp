@@ -29,9 +29,9 @@ void ExampleWrite( PrettyWriter< FileWriteStream >& writer, const TypeInfo* info
             
             // if value type - convert to string
             
-            if( field.Info->ToString )
+            if( field.Type->ToString )
             {
-                writer.String( field.Info->ToString( ptr, buffer, 256 ) );
+                writer.String( field.Type->ToString( ptr, buffer, 256 ) );
             }
             
             // if array
@@ -57,7 +57,7 @@ void ExampleWrite( PrettyWriter< FileWriteStream >& writer, const TypeInfo* info
             
             else
             {
-                ExampleWrite( writer, field.Info, ptr );
+                ExampleWrite( writer, field.Type, ptr );
             }
         }
     }
@@ -87,7 +87,8 @@ void* ExampleRead( void* obj, const Document::GenericValue& node )
         return nullptr;
     }
     
-    // instantiate
+    
+    // instantiate if we weren't already given an object to fill out
     
     if( obj == nullptr )
     {
@@ -102,45 +103,109 @@ void* ExampleRead( void* obj, const Document::GenericValue& node )
         return obj;
     }
 
-    auto field = typeInfo->Fields;
+    
     auto numFields = typeInfo->NumMembers;
     
-    while( numFields-- )
+    for( auto field = typeInfo->Fields; numFields--; ++field )
     {
         if( node.HasMember( field->Name ) == false )
         {
-            field++;
             continue;
         }
         
         auto& fieldNode = node[ field->Name ];
-        auto pMember = field->Get( obj );
+        
+        
+        // if value type ...
         
         if( fieldNode.IsString() )
         {
-            //field->Info->ToString
-            std::cout << field->Name << " = " << fieldNode.GetString() << std::endl;
+            if( field->Type->FromString )
+            {
+                if( field->Type->FromString( field->Get( obj ), fieldNode.GetString() ) == false )
+                {
+                    std::cerr << "Failed to convert '" << fieldNode.GetString() << "' to " << field->Name << std::endl;
+                }
+            }
+            else
+            {
+                std::cerr << "No value converter for " << field->Name << std::endl;
+            }
         }
+        
+        
+        // if array of objects ...
+
         else if( fieldNode.IsArray() )
         {
-            std::cout << field->Name << " is array" << std::endl;
+            // make sure we can insert new objects here ...
             
+            if( field->IsArray == false )
+            {
+                std::cout << field->Name << " is not an array" << std::endl;
+                continue;
+            }
+            
+            if( field->Inserter == nullptr )
+            {
+                std::cout << field->Name << " has no inserter" << std::endl;
+                continue;
+            }
+            
+            auto inserter = field->Inserter( obj, fieldNode.Size() );
+            
+            if( !inserter )
+            {
+                std::cout << field->Name << " did not return an inserter" << std::endl;
+                continue;
+            }
+            
+            // create objects
+            
+            for( auto itr = fieldNode.Begin(); itr != fieldNode.End(); ++itr )
+            {
+                if( itr->HasMember( "Type" ) == false )
+                {
+                    std::cout << "Unknown type of element for " << field->Name << std::endl;
+                    continue;
+                }
+                
+                auto& elementNode = *itr;
+                auto elementType = registry.Find( elementNode[ "Type" ].GetString() );
+                
+                if( elementType->IsA( field->Type ) == false )
+                {
+                    std::cout << "Element for " << field->Name << " is incorrect type" << std::endl;
+                    continue;
+                }
+                
+                auto element = ExampleRead( nullptr, elementNode );
+                
+                if( element == nullptr || inserter( element ) == false )
+                {
+                    std::cout << "Failed to insert object into " << field->Name << std::endl;
+                    break;
+                }
+                
+            }
         }
+        
+        
+        // if sub-object
+        
         else if( fieldNode.IsObject() )
         {
-            std::cout << field->Name << " is object" << std::endl;
-            ExampleRead( pMember, fieldNode );
+            ExampleRead( field->Get( obj ), fieldNode );
         }
+        
+        
+        // eek!
+        
         else
         {
             std::cerr << "Unknown type " << field->Name << std::endl;
         }
-        
-        field++;
-    
     }
-    
-    std::cout << std::endl;
     
     return obj;
 }

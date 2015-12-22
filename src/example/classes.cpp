@@ -5,12 +5,35 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
+GameObject::GameObject()
+    : SecretValue( 64.f )
+{
+}
+
+GameObject::~GameObject()
+{
+    for( auto component : Components )
+    {
+        delete component;
+    }
+    
+    for( auto child : Children )
+    {
+        delete child;
+    }
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+
 static int ID = 0;
 
 bool RandomChance()
 {
     return ( rand() >> 6 ) % 3 != 0;  // 2 in 3 chance
 }
+
 
 
 ////////////////////////////////////////////////////////////////////////////////

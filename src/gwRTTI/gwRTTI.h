@@ -5,6 +5,7 @@
 #include <string>
 #include <map>
 
+
 ////////////////////////////////////////////////////////////////////////////////
 
 #if defined( _MSC_VER )
@@ -14,6 +15,8 @@
     #define gwDLL_EXPORT __declspec( dllexport )
     #define gwDLL_IMPORT __declspec( dllimport )
 
+    #define gw_stricmp _stricmp
+
 #elif defined( __GNUC__ )
 
     #include <inttypes.h>
@@ -21,6 +24,8 @@
 
     #define gwDLL_EXPORT __attribute__ ((visibility ("default")))
     #define gwDLL_IMPORT __attribute__ ((visibility ("default")))
+
+    #define gw_stricmp strcasecmp
 
 #else
 
@@ -48,8 +53,6 @@ namespace gw
     {
         struct TypeInfo;
         
-        extern const char* __ValueTypeToString( const TypeInfo* type, void* obj, char* buffer, int size );
-        
         ////////////////////////////////////////////////////////////////////////////////
         
         struct Attr
@@ -72,25 +75,28 @@ namespace gw
             void* (*Get)( void* );
             
             const char*     Name;
-            const TypeInfo* Info;
+            const TypeInfo* Type;
             
             Attr*           Attrs;
             int             NumAttrs;
             
-            bool IsPointer:1;
-            bool IsArray:1;
+            bool            IsPointer:1;
+            bool            IsArray:1;
             
             std::function< std::pair<void*,const TypeInfo*>() > (*Iterator)( void* );
-                        
+            std::function< bool(void*) > (*Inserter)( void*, int );
+            
             Field()
                 : Get( nullptr )
                 , Name( nullptr )
-                , Info( nullptr )
+                , Type( nullptr )
                 , Attrs( nullptr )
                 , NumAttrs( 0 )
                 , IsPointer( false )
                 , IsArray( false )
+            
                 , Iterator( nullptr )
+                , Inserter( nullptr )
             {
             }
         };
@@ -107,8 +113,9 @@ namespace gw
             std::string     Name;                   // name
             uint64_t        Hash;                   // djb2_64 hash of name
             
-            void* (*Instantiate)();                 // instantiate function
-            const char* (*ToString)( void*, char*, int );
+            void*       ( * Instantiate )();
+            const char* ( * ToString )( void*, char*, int );
+            bool        ( * FromString )( void*, const char* );
             
             // potentially useful(!?) things we can infer from the type
 
@@ -119,18 +126,20 @@ namespace gw
             const TypeInfo** Inherits;  // base classes
             
             Field*          Fields;     // classes have fields
-            Constant*       Constants;  // enums have constants ... don't get them confused :)
-            
+            Constant*       Constants;  // enums have constants
             int             NumMembers; // num fields or num constants
             
             Attr*           Attrs;      // key/value attribute pairs
             int             NumAttrs;
             
             TypeInfo()
+            
                 : UID( 0 )
                 , Hash( ~0 )
+            
                 , Instantiate( nullptr )
                 , ToString( nullptr )
+                , FromString( nullptr )
 
                 , IsFundamental( false )
                 , IsEnum( false )
@@ -157,9 +166,8 @@ namespace gw
                 static Registry& Instance() { static Registry sRegistry; return sRegistry; }
 
                 const TypeInfo* Find( const char* );
-                void*           Instantiate( const char* );
+                TypeInfo*       FindOrCreate( const char* ); // only use during instantiation
 
-                TypeInfo*       FindOrCreate( const char* );
 
             protected:
 
@@ -177,7 +185,7 @@ namespace gw
         ////////////////////////////////////////////////////////////////////////////////
         // templated implementation of specific type info
         // we use template specialisation to provide the
-
+        
         template< typename T >
         struct TypeInfoImpl : public TypeInfo
         {
@@ -187,6 +195,10 @@ namespace gw
 
             static const TypeInfo* Class()
             {
+                // first call instantiates the type (which should be from a gwRTTI_REGISTER!)
+                // this is to address the "shared boundaries" issue (i.e. Windows DLL's)
+                // This isn't a problem if the library is statically linked
+                
                 static const TypeInfo* info = CreateTypeInfo();
                 return info;
             }
@@ -194,18 +206,19 @@ namespace gw
 
             protected:
             
-                // called first time we access the class - which be from gwRTTI_REGISTER!
+                // called first time we access the class - which should be from a gwRTTI_REGISTER
 
                 static const TypeInfo* CreateTypeInfo()
                 {
-                    // first call we fetch from registry - this is because of memory is local to "shared boundaries"
-                    // (i.e. Windows DLL's). This isn't a problem if the library is statically linked
+                    // register type name
                     
                     #ifdef _MSC_VER
                         TypeInfo* info = gw::RTTI::Registry::Instance().FindOrCreate( __FUNCSIG__ );
                     #else
                         TypeInfo* info = gw::RTTI::Registry::Instance().FindOrCreate( __PRETTY_FUNCTION__ );
                     #endif
+                    
+                    // set some default values
                     
                     auto p = reinterpret_cast< TypeInfoImpl<T>* >( const_cast<TypeInfo*>( info ) );
 
@@ -216,8 +229,14 @@ namespace gw
                     
                     if( std::is_enum<T>::value || std::is_fundamental<T>::value )
                     {
-                        p->ToString = []( void* obj, char* buf, int size ){ return __ValueTypeToString( TypeInfoImpl<T>::Class(), obj, buf, size ); };
+                        extern const char* ValueTypeToString( const TypeInfo* type, void* obj, char* buffer, int size );
+                        extern bool ValueTypeFromString( const TypeInfo* type, void* obj, const char* buffer );
+                        
+                        p->ToString   = []( void* obj, char* buf, int size ) { return ValueTypeToString( TypeInfoImpl<T>::Class(), obj, buf, size ); };
+                        p->FromString = []( void* obj, const char* buf )     { return ValueTypeFromString( TypeInfoImpl<T>::Class(), obj, buf ); };
                     }
+                    
+                    // now call custom type instantiation
 
                     p->Create();
 
@@ -264,14 +283,14 @@ namespace gw
         ////////////////////////////////////////////////////////////////////////////////
         // RTTI for classes
 
-        #define gwRTTI(T) \
+        #define gwRTTI \
             public: \
                 virtual const gw::RTTI::TypeInfo* GetType() const { return gw::RTTI::Type( this ); } \
-                friend void gw::RTTI::TypeInfoImpl<T>::Create();
+                //friend void gw::RTTI::TypeInfoImpl<T>::Create();
 
 
         template< typename T, typename O >
-        T* Cast( O* object )
+        T* DynamicCast( O* object )
         {
             // NB: static_cast required to rebase pointer
             return object && object->Type()->IsA( RTTI::Type<T>() ) ? static_cast<T*>( object ) : nullptr;

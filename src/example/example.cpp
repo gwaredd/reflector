@@ -87,7 +87,7 @@ void Load( const char* filename )
     {
         std::string ObjTag = "GameObject";
         
-        for( Value::ConstValueIterator itr = doc.Begin(); itr != doc.End(); ++itr )
+        for( auto itr = doc.Begin(); itr != doc.End(); ++itr )
         {
             const Document::GenericValue& node = *itr;
             

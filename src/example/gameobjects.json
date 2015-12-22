@@ -12,7 +12,7 @@
             {
                 "Type": "RenderComponent",
                 "Name": "RenderComponent",
-                "Enabled": "true",
+                "Enabled": "false",
                 "Mesh": {
                     "Type": "RenderMesh"
                 }

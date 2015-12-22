@@ -29,7 +29,7 @@
     // {{= fi}}. {{= f.name }}{{? f.from }} (inhertied from {{= f.from }}){{?}}
 
     p[ {{=fi}} ].Name     = "{{= f.name }}";
-    p[ {{=fi}} ].Info     = {{? f.type != "this" }}Type< {{= f.type }} >(){{??}}this{{?}};{{? f.pointer }}
+    p[ {{=fi}} ].Type     = {{? f.type != "this" }}Type< {{= f.type }} >(){{??}}this{{?}};{{? f.pointer }}
     p[ {{=fi}} ].IsPointer= true;{{?}}
     p[ {{=fi}} ].Get      = []( void* o ) -> void* { return &reinterpret_cast<{{= decl.name }}*>(o)->{{= f.name }}; };{{# def.itr }}
     {{# def.attrs:{ decl:f, name:"p" + fi + "_attrs", prefix:"p[" + fi + "]" } }}
@@ -41,7 +41,7 @@
     p[ {{=fi}} ].IsArray  = true;
     p[ {{=fi}} ].Iterator = []( void* o ) -> std::function< std::pair< void*,const TypeInfo* >() >
     {
-        auto obj = reinterpret_cast<{{= decl.name }}*>(o);
+        auto obj = reinterpret_cast<{{= decl.name }}*>( o );
         auto itr = std::begin( obj->{{= f.name }} );
         auto end = std::end( obj->{{= f.name }} );
 
@@ -50,6 +50,17 @@
             if( itr == end ) return std::make_pair( nullptr, nullptr );
             auto cur = *itr++;
             return std::make_pair( cur, cur->GetType() );
+        };
+    };
+    p[ {{=fi}} ].Inserter = []( void* o, int size ) -> std::function< bool(void*) >
+    {
+        auto obj = reinterpret_cast<{{= decl.name }}*>( o );
+        obj->{{= f.name }}.reserve( obj->{{= f.name }}.size() + size );
+
+        return [=]( void* i ) -> bool
+        {
+            obj->{{= f.name }}.push_back( reinterpret_cast< {{? f.type != "this" }}{{= f.type }}{{??}}{{= f.alttype }}{{?}}* >( i ) );
+            return true;
         };
     };{{??}}
 #error unknown iterator type!{{?}}{{?}}#}}

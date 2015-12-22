@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Automatically generated RTTI information
 // source  : example.json
-// date    : Mon Dec 21 2015 22:34:39 GMT+0000 (GMT)
+// date    : Tue Dec 22 2015 01:23:44 GMT+0000 (GMT)
 
 #include <vector>
 #include <string>
@@ -40,7 +40,29 @@ template<> void TypeInfoImpl< std::string >::Create()
 
         return obj ? ((std::string*)obj)->c_str() : buf;
     };
+
+    FromString = []( void* obj, const char* buf ) -> bool
+    {
+        if( obj == nullptr )
+        {
+            return false;
+        }
+
+        auto str = (std::string*)obj;
+
+        if( buf )
+        {
+            *str = buf;
+        }
+        else
+        {
+            str->empty();
+        }
+
+        return true;
+    };
 }
+
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -65,21 +87,21 @@ template<> void TypeInfoImpl< Vector3 >::Create()
     // 0. x
 
     p[ 0 ].Name     = "x";
-    p[ 0 ].Info     = Type< float >();
+    p[ 0 ].Type     = Type< float >();
     p[ 0 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<Vector3*>(o)->x; };
     
 
     // 1. y
 
     p[ 1 ].Name     = "y";
-    p[ 1 ].Info     = Type< float >();
+    p[ 1 ].Type     = Type< float >();
     p[ 1 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<Vector3*>(o)->y; };
     
 
     // 2. z
 
     p[ 2 ].Name     = "z";
-    p[ 2 ].Info     = Type< float >();
+    p[ 2 ].Type     = Type< float >();
     p[ 2 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<Vector3*>(o)->z; };
     
 
@@ -114,14 +136,14 @@ template<> void TypeInfoImpl< Component >::Create()
     // 0. Name
 
     p[ 0 ].Name     = "Name";
-    p[ 0 ].Info     = Type< std::string >();
+    p[ 0 ].Type     = Type< std::string >();
     p[ 0 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<Component*>(o)->Name; };
     
 
     // 1. Enabled
 
     p[ 1 ].Name     = "Enabled";
-    p[ 1 ].Info     = Type< bool >();
+    p[ 1 ].Type     = Type< bool >();
     p[ 1 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<Component*>(o)->Enabled; };
     
 
@@ -156,21 +178,21 @@ template<> void TypeInfoImpl< RenderComponent >::Create()
     // 0. Name (inhertied from Component)
 
     p[ 0 ].Name     = "Name";
-    p[ 0 ].Info     = Type< std::string >();
+    p[ 0 ].Type     = Type< std::string >();
     p[ 0 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<RenderComponent*>(o)->Name; };
     
 
     // 1. Enabled (inhertied from Component)
 
     p[ 1 ].Name     = "Enabled";
-    p[ 1 ].Info     = Type< bool >();
+    p[ 1 ].Type     = Type< bool >();
     p[ 1 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<RenderComponent*>(o)->Enabled; };
     
 
     // 2. Mesh
 
     p[ 2 ].Name     = "Mesh";
-    p[ 2 ].Info     = Type< RenderMesh >();
+    p[ 2 ].Type     = Type< RenderMesh >();
     p[ 2 ].IsPointer= true;
     p[ 2 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<RenderComponent*>(o)->Mesh; };
     
@@ -206,21 +228,21 @@ template<> void TypeInfoImpl< PhysicsComponent >::Create()
     // 0. Name (inhertied from Component)
 
     p[ 0 ].Name     = "Name";
-    p[ 0 ].Info     = Type< std::string >();
+    p[ 0 ].Type     = Type< std::string >();
     p[ 0 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<PhysicsComponent*>(o)->Name; };
     
 
     // 1. Enabled (inhertied from Component)
 
     p[ 1 ].Name     = "Enabled";
-    p[ 1 ].Info     = Type< bool >();
+    p[ 1 ].Type     = Type< bool >();
     p[ 1 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<PhysicsComponent*>(o)->Enabled; };
     
 
     // 2. CollisionType
 
     p[ 2 ].Name     = "CollisionType";
-    p[ 2 ].Info     = Type< PhysicsComponent::Type >();
+    p[ 2 ].Type     = Type< PhysicsComponent::Type >();
     p[ 2 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<PhysicsComponent*>(o)->CollisionType; };
     
 
@@ -287,28 +309,28 @@ template<> void TypeInfoImpl< CollisionComponent >::Create()
     // 0. Name (inhertied from Component)
 
     p[ 0 ].Name     = "Name";
-    p[ 0 ].Info     = Type< std::string >();
+    p[ 0 ].Type     = Type< std::string >();
     p[ 0 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<CollisionComponent*>(o)->Name; };
     
 
     // 1. Enabled (inhertied from Component)
 
     p[ 1 ].Name     = "Enabled";
-    p[ 1 ].Info     = Type< bool >();
+    p[ 1 ].Type     = Type< bool >();
     p[ 1 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<CollisionComponent*>(o)->Enabled; };
     
 
     // 2. CollisionType (inhertied from PhysicsComponent)
 
     p[ 2 ].Name     = "CollisionType";
-    p[ 2 ].Info     = Type< PhysicsComponent::Type >();
+    p[ 2 ].Type     = Type< PhysicsComponent::Type >();
     p[ 2 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<CollisionComponent*>(o)->CollisionType; };
     
 
     // 3. CollisionResonse
 
     p[ 3 ].Name     = "CollisionResonse";
-    p[ 3 ].Info     = Type< CollisionComponent::Response >();
+    p[ 3 ].Type     = Type< CollisionComponent::Response >();
     p[ 3 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<CollisionComponent*>(o)->CollisionResonse; };
     
 
@@ -375,28 +397,28 @@ template<> void TypeInfoImpl< ScriptComponent >::Create()
     // 0. Name (inhertied from Component)
 
     p[ 0 ].Name     = "Name";
-    p[ 0 ].Info     = Type< std::string >();
+    p[ 0 ].Type     = Type< std::string >();
     p[ 0 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<ScriptComponent*>(o)->Name; };
     
 
     // 1. Enabled (inhertied from Component)
 
     p[ 1 ].Name     = "Enabled";
-    p[ 1 ].Info     = Type< bool >();
+    p[ 1 ].Type     = Type< bool >();
     p[ 1 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<ScriptComponent*>(o)->Enabled; };
     
 
     // 2. Script
 
     p[ 2 ].Name     = "Script";
-    p[ 2 ].Info     = Type< std::string >();
+    p[ 2 ].Type     = Type< std::string >();
     p[ 2 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<ScriptComponent*>(o)->Script; };
     
 
     // 3. SomeValue
 
     p[ 3 ].Name     = "SomeValue";
-    p[ 3 ].Info     = Type< float >();
+    p[ 3 ].Type     = Type< float >();
     p[ 3 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<ScriptComponent*>(o)->SomeValue; };
     
     static Attr p3_attrs[ 2 ];
@@ -442,26 +464,26 @@ template<> void TypeInfoImpl< GameObject >::Create()
     // 0. Name
 
     p[ 0 ].Name     = "Name";
-    p[ 0 ].Info     = Type< std::string >();
+    p[ 0 ].Type     = Type< std::string >();
     p[ 0 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<GameObject*>(o)->Name; };
     
 
     // 1. Position
 
     p[ 1 ].Name     = "Position";
-    p[ 1 ].Info     = Type< Vector3 >();
+    p[ 1 ].Type     = Type< Vector3 >();
     p[ 1 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<GameObject*>(o)->Position; };
     
 
     // 2. Components
 
     p[ 2 ].Name     = "Components";
-    p[ 2 ].Info     = Type< Component >();
+    p[ 2 ].Type     = Type< Component >();
     p[ 2 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<GameObject*>(o)->Components; };
     p[ 2 ].IsArray  = true;
     p[ 2 ].Iterator = []( void* o ) -> std::function< std::pair< void*,const TypeInfo* >() >
     {
-        auto obj = reinterpret_cast<GameObject*>(o);
+        auto obj = reinterpret_cast<GameObject*>( o );
         auto itr = std::begin( obj->Components );
         auto end = std::end( obj->Components );
 
@@ -472,17 +494,28 @@ template<> void TypeInfoImpl< GameObject >::Create()
             return std::make_pair( cur, cur->GetType() );
         };
     };
+    p[ 2 ].Inserter = []( void* o, int size ) -> std::function< bool(void*) >
+    {
+        auto obj = reinterpret_cast<GameObject*>( o );
+        obj->Components.reserve( obj->Components.size() + size );
+
+        return [=]( void* i ) -> bool
+        {
+            obj->Components.push_back( reinterpret_cast< Component* >( i ) );
+            return true;
+        };
+    };
     
 
     // 3. Children
 
     p[ 3 ].Name     = "Children";
-    p[ 3 ].Info     = this;
+    p[ 3 ].Type     = this;
     p[ 3 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<GameObject*>(o)->Children; };
     p[ 3 ].IsArray  = true;
     p[ 3 ].Iterator = []( void* o ) -> std::function< std::pair< void*,const TypeInfo* >() >
     {
-        auto obj = reinterpret_cast<GameObject*>(o);
+        auto obj = reinterpret_cast<GameObject*>( o );
         auto itr = std::begin( obj->Children );
         auto end = std::end( obj->Children );
 
@@ -491,6 +524,17 @@ template<> void TypeInfoImpl< GameObject >::Create()
             if( itr == end ) return std::make_pair( nullptr, nullptr );
             auto cur = *itr++;
             return std::make_pair( cur, cur->GetType() );
+        };
+    };
+    p[ 3 ].Inserter = []( void* o, int size ) -> std::function< bool(void*) >
+    {
+        auto obj = reinterpret_cast<GameObject*>( o );
+        obj->Children.reserve( obj->Children.size() + size );
+
+        return [=]( void* i ) -> bool
+        {
+            obj->Children.push_back( reinterpret_cast< GameObject* >( i ) );
+            return true;
         };
     };
     
