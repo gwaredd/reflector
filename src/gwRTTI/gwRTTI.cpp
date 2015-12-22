@@ -7,16 +7,21 @@ namespace gw
 {
     namespace RTTI
     {
+        //------------------------------------------------------------------------------
+        // util functions
+        //------------------------------------------------------------------------------
+        
+        
         ////////////////////////////////////////////////////////////////////////////////
         // quick string hashing function
         
-        static uint64_t DJB2_64( const char* str )
+        static uint32_t DJB2( const char* str )
         {
-            uint64_t hash = 5381;
+            uint32_t hash = 5381;
             
             if( str )
             {
-                while( uint64_t c = (uint64_t) ( *str++ ) )
+                while( uint32_t c = (uint32_t) ( *str++ ) )
                 {
                     hash = ((hash << 5) + hash) + c; // hash * 33 + c
                 }
@@ -32,15 +37,15 @@ namespace gw
         static std::string ExtractName( const char* func )
         {
             // function signatures look something like this ...
-            //  static const gw::RTTI::TypeInfo *gw::RTTI::TypeInfoImpl< std::string<char> >::Initialise()
+            //
+            //  "static const gw::RTTI::TypeInfo *gw::RTTI::TypeInfoImpl< std::string<char> >::Initialise()"
+            //
             
-            // extract the type from within the <>
+            // extract the type from within the first <...>
             
-            auto start = strchr( func, '<' );
-            
-            if( start )
+            if( auto start = strchr( func, '<' ) )
             {
-                // balance the <>
+                // balance the <...>
                 
                 auto end   = ++start;
                 auto count = 1;
@@ -72,7 +77,9 @@ namespace gw
         }
         
         
-        ////////////////////////////////////////////////////////////////////////////////
+        //------------------------------------------------------------------------------
+        // Registry
+        //------------------------------------------------------------------------------
         
         class Registry
         {
@@ -82,29 +89,51 @@ namespace gw
             
                 static Registry* Instance()
                 {
-                    if( sRegistry == nullptr )
+                    static Registry* registry = nullptr;
+                    
+                    if( registry == nullptr )
                     {
-                        sRegistry=  new Registry();
+                        registry = new Registry();
                     }
                     
-                    return sRegistry;
+                    return registry;
                 }
                 
-                const TypeInfo*     Find( const char* );
-                TypeInfo*           Create( const char* );
+                const TypeInfo* Find( const char* );
+                const TypeInfo* Create( const char* );
             
                 
             protected:
             
-                static Registry* sRegistry;
                 std::map< std::string, TypeInfo > mTypes;
         };
+
         
-        Registry* Registry::sRegistry = nullptr;
+        ////////////////////////////////////////////////////////////////////////////////
+
+        const TypeInfo* Registry::Find( const char* name )
+        {
+            auto itr = mTypes.find( name );
+            return itr != mTypes.end() ? &itr->second : nullptr;
+        }
         
         
         ////////////////////////////////////////////////////////////////////////////////
-        //
+        
+        const TypeInfo* Registry::Create( const char* name )
+        {
+            auto info = &mTypes[ name ];
+            
+            info->Name  = name;
+            info->Hash  = DJB2( name );
+            
+            return info;
+        }
+        
+        
+        
+        ////////////////////////////////////////////////////////////////////////////////
+        // __declspec( dllexport ) functions to ensure registry is the same accross shared boundaries
         
         const TypeInfo* Find( const char* name )
         {
@@ -119,14 +148,16 @@ namespace gw
             
             return info ? info : registry->Create( name );
         }
-
         
-        ////////////////////////////////////////////////////////////////////////////////
+        
+        //------------------------------------------------------------------------------
+        // TypeInfo
+        //------------------------------------------------------------------------------
         
         bool TypeInfo::IsA( const TypeInfo* type ) const
         {
             const TypeInfo** info = BaseClasses;
-
+            
             do
             {
                 if( *info == type )
@@ -142,26 +173,9 @@ namespace gw
         }
         
         
-        ////////////////////////////////////////////////////////////////////////////////
-
-        const TypeInfo* Registry::Find( const char* name )
-        {
-            auto itr = mTypes.find( name );
-            return itr != mTypes.end() ? &itr->second : nullptr;
-        }
-        
-        
-        ////////////////////////////////////////////////////////////////////////////////
-        
-        TypeInfo* Registry::Create( const char* name )
-        {
-            auto info = &mTypes[ name ];
-            
-            info->Name  = name;
-            info->Hash  = DJB2_64( name );
-            
-            return info;
-        }
+        //------------------------------------------------------------------------------
+        // standard value converters
+        //------------------------------------------------------------------------------
         
         
         ////////////////////////////////////////////////////////////////////////////////
@@ -197,31 +211,31 @@ namespace gw
         {
             switch( type->Hash )
             {
-                case 0x000000017C94B391: // bool
+                case 0x7c94b391: // bool
                     sprintf( buffer, "%s", *((bool*)obj) ? "true" : "false" );
                     break;
                     
-                case 0x000000017C952063: // char
+                case 0x7c952063: // char
                     sprintf( buffer, "%c", *((char*)obj) );
                     break;
                     
-                case 0x6A011564F9CBA7A0: // unsigned char
+                case 0xf9cba7a0: // unsigned char
                     sprintf( buffer, "%hhu", *((unsigned char*)obj) );
                     break;
                     
-                case 0x000000000B888030: // int
+                case 0x0b888030: // int
                     sprintf( buffer, "%i", *((int*)obj) );
                     break;
                     
-                case 0xDC6CA38EB23C93CD: // unsigned int
+                case 0xb23c93cd: // unsigned int
                     sprintf( buffer, "%u", *((unsigned int*)obj) );
                     break;
                     
-                case 0x000000310F71E19B: // float
+                case 0x0f71e19b: // float
                     sprintf( buffer, "%f", *((float*)obj) );
                     break;
                     
-                case 0x00000652F93D5B20: // double
+                case 0xf93d5b20: // double
                     sprintf( buffer, "%lf", *((double*)obj) );
                     break;
             }
@@ -289,26 +303,26 @@ namespace gw
         {
             switch( type->Hash )
             {
-                case 0x000000017C94B391: // bool
+                case 0x7c94b391: // bool
                     *((bool*)obj) = gw_stricmp( buffer, "true" ) == 0;
                     return true;
                     
-                case 0x000000017C952063: // char
+                case 0x7c952063: // char
                     return sscanf( buffer, "%c", (char*)obj ) == 1;
                     
-                case 0x6A011564F9CBA7A0: // unsigned char
+                case 0xf9cba7a0: // unsigned char
                     return sscanf( buffer, "%hhu", (unsigned char*)obj ) == 1;
                     
-                case 0x000000000B888030: // int
+                case 0x0b888030: // int
                     return sscanf( buffer, "%i", (int*)obj ) == 1;
                     
-                case 0xDC6CA38EB23C93CD: // unsigned int
+                case 0xb23c93cd: // unsigned int
                     return sscanf( buffer, "%u", (int*)obj ) == 1;
                     
-                case 0x000000310F71E19B: // float
+                case 0x0f71e19b: // float
                     return sscanf( buffer, "%f", (float*)obj ) == 1;
                     
-                case 0x00000652F93D5B20: // double
+                case 0xf93d5b20: // double
                     return sscanf( buffer, "%lf", (double*)obj ) == 1;
             }
             

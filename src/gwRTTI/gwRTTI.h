@@ -49,6 +49,15 @@ namespace gw
 {
     namespace RTTI
     {
+        struct TypeInfo;
+        
+        
+        ////////////////////////////////////////////////////////////////////////////////
+        // "registry"
+        
+        extern GWRTTI_API const TypeInfo* Find( const char* );
+        
+        
         ////////////////////////////////////////////////////////////////////////////////
         // custom attribute
         
@@ -67,13 +76,11 @@ namespace gw
             const char* Name;
             int         Value;
         };
-        
+
         
         ////////////////////////////////////////////////////////////////////////////////
         // object field
         
-        struct TypeInfo;
-
         struct GWRTTI_API Field
         {
             const char*     Name;   // field name
@@ -88,12 +95,12 @@ namespace gw
             Attr*           Attrs;
             int             NumAttrs;
             
-            // array accessors
+            // accessors for array types
             
             std::function< std::pair<void*,const TypeInfo*>() > (*Iterator)( void* );
             std::function< bool(void*) > (*Inserter)( void*, int );
             
-            // pointer types
+            // type hints
             
             bool            IsPointer:1;
             bool            IsArray:1;
@@ -118,7 +125,7 @@ namespace gw
 
 
         ////////////////////////////////////////////////////////////////////////////////
-        // Base TypeInfo
+        // TypeInfo
 
         struct GWRTTI_API TypeInfo
         {
@@ -126,7 +133,7 @@ namespace gw
             
             
             std::string         Name;               // name
-            uint64_t            Hash;               // djb2_64 hash of name
+            uint32_t            Hash;               // djb2 hash of name
             const TypeInfo**    BaseClasses;        // inherited types ( IsA(...) )
             
             // specialised functions
@@ -148,7 +155,7 @@ namespace gw
             
             // type hints
             
-            bool                IsInstantiated:1;   // set to true after registration
+            bool                IsInstantiated:1;   // set to true after registration complete
             bool                IsFundamental:1;
             bool                IsEnum:1;
             bool                IsPOD:1;
@@ -180,33 +187,59 @@ namespace gw
 
 
         ////////////////////////////////////////////////////////////////////////////////
-        // registry should be safe accross shared boundaries (windows DLL's)
+        // TypeInfo implementation
         
-        extern GWRTTI_API const TypeInfo* Find( const char* );
-        extern GWRTTI_API const TypeInfo* FindOrCreate( const char* );
-
-
-        ////////////////////////////////////////////////////////////////////////////////
-        // TypeInfo specialisation
-
         template< typename T >
         struct TypeInfoImpl : public TypeInfo
         {
-            public:
+            static const TypeInfo* GetType()
+            {
+                extern GWRTTI_API const TypeInfo* FindOrCreate( const char* );
+                
+                static const TypeInfo* info = FindOrCreate( gwRTTI_FUNCSIG );
+                return info;
+            }
             
-                // specialise Create() to provide custom type implementation
-                void Create() {}
-
-                static const TypeInfo* GetType()
-                {
-                    static const TypeInfo* info = FindOrCreate( gwRTTI_FUNCSIG );
-                    return info;
-                }
+        
+            //
+            // use template specialisation to setup custom type ...
+            //
+            //  template<> void TypeInfoImpl< Vector3 >::Create()
+            //  {
+            //  }
+            //
+            //  gwRTTI_REGISTER( Vector3 );
+            //
+            
+            void Create()
+            {
+            }
         };
+        
+        
+        //
+        // type functions, e.g.
+        //
+        //  Type< float >()
+        //  Type( pSomeValue )
+        //
+        
+        template< typename T > inline const TypeInfo* Type()
+        {
+            return TypeInfoImpl<T>::GetType();
+        }
+        
+        template< typename T > inline const TypeInfo* Type( const T* )
+        {
+            return TypeInfoImpl<T>::GetType();
+        }
 
 
         ////////////////////////////////////////////////////////////////////////////////
         // register type during global ctor initialisation - we do our custom setup here
+        //
+        //  gwRTTI_REGISTER( Vector3 );
+        //
 
         template<typename T>
         struct Register
@@ -215,40 +248,43 @@ namespace gw
             {
                 // create generic entry
                 
-                auto generic_info = TypeInfoImpl<T>::GetType();
+                auto info = TypeInfoImpl<T>::GetType();
                 
-                // now fill in with custom value
                 
-                auto info = reinterpret_cast< TypeInfoImpl<T>* >( const_cast<TypeInfo*>( generic_info ) );
+                // now fill out entry
                 
-                // set some default values we can infer from type
+                auto impl = static_cast< TypeInfoImpl<T>* >( const_cast<TypeInfo*>( info ) );
                 
-                info->Instantiate       = std::is_constructible<T>::value ? []() -> void* { return new T(); } : nullptr;
-                info->IsFundamental     = std::is_fundamental<T>::value;
-                info->IsEnum            = std::is_enum<T>::value;
-                info->IsPOD             = std::is_pod<T>::value;
+                
+                // set some default values
+                
+                impl->Instantiate       = std::is_constructible<T>::value ? []() -> void* { return new T(); } : nullptr;
+                impl->IsFundamental     = std::is_fundamental<T>::value;
+                impl->IsEnum            = std::is_enum<T>::value;
+                impl->IsPOD             = std::is_pod<T>::value;
                 
                 if( std::is_enum<T>::value || std::is_fundamental<T>::value )
                 {
                     extern const char* ValueTypeToString( const TypeInfo* type, void* obj, char* buffer, int size );
                     extern bool ValueTypeFromString( const TypeInfo* type, void* obj, const char* buffer );
                     
-                    info->ToString   = []( void* obj, char* buf, int size ) { return ValueTypeToString( TypeInfoImpl<T>::GetType(), obj, buf, size ); };
-                    info->FromString = []( void* obj, const char* buf )     { return ValueTypeFromString( TypeInfoImpl<T>::GetType(), obj, buf ); };
+                    impl->ToString   = []( void* obj, char* buf, int size ) { return ValueTypeToString( TypeInfoImpl<T>::GetType(), obj, buf, size ); };
+                    impl->FromString = []( void* obj, const char* buf )     { return ValueTypeFromString( TypeInfoImpl<T>::GetType(), obj, buf ); };
                 }
                 
-                // now call custom type instantiation
                 
-                info->Create();
+                // call custom type instantiation
+                
+                impl->Create();
                 
                 
-                // flag as complete (useful if we're dynamically loading type info)
+                // flag as complete
                 
-                info->IsInstantiated = true;
+                impl->IsInstantiated = true;
             }
         };
 
-        // use __COUNTER__ as some names have spaces in them (e.g. "unsigned int")
+        // use __COUNTER__ here for unique names ( without spaces, e.g. "unsigned int" )
 
         #define __gwRTTI_REGISTER_CONCAT(a,b) a##b
         #define __gwRTTI_REGISTER_CREATENAME(c) __gwRTTI_REGISTER_CONCAT( __gw_rtti_, c )
@@ -256,37 +292,31 @@ namespace gw
 
 
         ////////////////////////////////////////////////////////////////////////////////
-        // useful shorthand functions
-
-        template< typename T >
-        inline const TypeInfo* Type()
-        {
-            return TypeInfoImpl<T>::GetType();
-        }
-
-        template< typename T >
-        inline const TypeInfo* Type( const T* )
-        {
-            return TypeInfoImpl<T>::GetType();
-        }
-
-
-        ////////////////////////////////////////////////////////////////////////////////
         // RTTI for classes
+        //
+        //  class MyThingy
+        //  {
+        //      gwRTTI( MyThingy )
+        //  };
+        //
 
         #define gwRTTI( T ) \
             public: \
-                virtual const gw::RTTI::TypeInfo* GetType() const { return gw::RTTI::Type( this ); } \
-                static const gw::RTTI::TypeInfo* TypeInfo() { return gw::RTTI::Type<T>(); } \
+                virtual const gw::RTTI::TypeInfo* GetType() const   { return gw::RTTI::Type( this ); } \
+                static  const gw::RTTI::TypeInfo* TypeInfo()        { return gw::RTTI::Type<T>(); } \
                 friend struct gw::RTTI::TypeInfoImpl<T>; \
         
-
+        //
+        // DynamicCast
+        //
+        //  SomeObject* obj = gw::RTTI::DynamicCast< SomeObject >( thingy );
+        //
 
         template< typename T, typename O >
         T* DynamicCast( O* object )
         {
             // NB: static_cast required to rebase pointer
-            return object && object->GetType()->IsA( RTTI::Type<T>() ) ? static_cast<T*>( object ) : nullptr;
+            return object && object->GetType()->IsA( gw::RTTI::Type<T>() ) ? static_cast<T*>( object ) : nullptr;
         }
     }
 }
