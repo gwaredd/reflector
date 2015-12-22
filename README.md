@@ -32,15 +32,15 @@ cd ../..
 ```
 git clone https://github.com/gwaredd/reflector.git
 ```
-Now move the reflector code into the clang tools source tree (`llvm/tools/clang/tools/reflector`). It will be build as part of the llvm project.
+Now move the reflector code into the clang tools source tree (`llvm/tools/clang/tools/reflector`). It will be built as part of the llvm project.
 ```
 mv reflector/llvm/tools/clang/tools/reflector/ llvm/tools/clang/tools/
 ```
-**NB:** use `move` on windows.
+**NB:** `move` on windows.
 
 **Make the things!**
 
-If you are on a UNIX like environment (e.g. osx) you can use cmake to generate make files like this ...
+If you are on a UNIX like environment (e.g. OSX) you can use cmake to generate make files like this ...
 
 ```bash
 mkdir build
@@ -49,7 +49,7 @@ cmake -G "Unix Makefiles" ../llvm
 make
 ```
 
-On windows you may prefer to generate a Visual Studio project instead (`cmake -G "Visual Studio 12" ..\llvm`).
+On windows you may prefer to generate a Visual Studio project instead (e.g. `cmake -G "Visual Studio 12" ..\llvm`).
 
 ***(building may take some time)***
 
@@ -65,7 +65,7 @@ This should output JSON data to the stdout.
 
 ### Envision
 
-Envision is a coffeescript script that takes the JSON data created by reflector and compiles it into C++ source targeted at the prototype gwRTTI library (`src/gwRTTI/`).
+Envision is a coffeescript script that takes the JSON output of reflector and turns it into C++ source for the prototype gwRTTI library (`src/gwRTTI/`).
 
 This requires [node.js](https://nodejs.org/) and [coffeescript](http://coffeescript.org/).
 
