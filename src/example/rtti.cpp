@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Automatically generated RTTI information
 // source  : example.json
-// date    : Tue Dec 22 2015 01:23:44 GMT+0000 (GMT)
+// date    : Tue Dec 22 2015 13:38:46 GMT+0000 (GMT)
 
 #include <vector>
 #include <string>
@@ -75,39 +75,39 @@ template<> void TypeInfoImpl< Vector3 >::Create()
     //
     
     static const TypeInfo* bases[] = { this, nullptr };
-    Inherits = bases;
+    BaseClasses = bases;
 
     
     //
     // class fields
     //
 
-    static Field p[ 3 ];
+    static Field fields[ 3 ];
 
     // 0. x
 
-    p[ 0 ].Name     = "x";
-    p[ 0 ].Type     = Type< float >();
-    p[ 0 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<Vector3*>(o)->x; };
+    fields[ 0 ].Name     = "x";
+    fields[ 0 ].Type     = Type< float >();
+    fields[ 0 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<Vector3*>(o)->x; };
     
 
     // 1. y
 
-    p[ 1 ].Name     = "y";
-    p[ 1 ].Type     = Type< float >();
-    p[ 1 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<Vector3*>(o)->y; };
+    fields[ 1 ].Name     = "y";
+    fields[ 1 ].Type     = Type< float >();
+    fields[ 1 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<Vector3*>(o)->y; };
     
 
     // 2. z
 
-    p[ 2 ].Name     = "z";
-    p[ 2 ].Type     = Type< float >();
-    p[ 2 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<Vector3*>(o)->z; };
+    fields[ 2 ].Name     = "z";
+    fields[ 2 ].Type     = Type< float >();
+    fields[ 2 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<Vector3*>(o)->z; };
     
 
     // set fields
 
-    Fields          = p;
+    Fields          = fields;
     NumMembers      = 3;
 }
 
@@ -124,32 +124,32 @@ template<> void TypeInfoImpl< Component >::Create()
     //
     
     static const TypeInfo* bases[] = { this, nullptr };
-    Inherits = bases;
+    BaseClasses = bases;
 
     
     //
     // class fields
     //
 
-    static Field p[ 2 ];
+    static Field fields[ 2 ];
 
     // 0. Name
 
-    p[ 0 ].Name     = "Name";
-    p[ 0 ].Type     = Type< std::string >();
-    p[ 0 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<Component*>(o)->Name; };
+    fields[ 0 ].Name     = "Name";
+    fields[ 0 ].Type     = Type< std::string >();
+    fields[ 0 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<Component*>(o)->Name; };
     
 
     // 1. Enabled
 
-    p[ 1 ].Name     = "Enabled";
-    p[ 1 ].Type     = Type< bool >();
-    p[ 1 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<Component*>(o)->Enabled; };
+    fields[ 1 ].Name     = "Enabled";
+    fields[ 1 ].Type     = Type< bool >();
+    fields[ 1 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<Component*>(o)->Enabled; };
     
 
     // set fields
 
-    Fields          = p;
+    Fields          = fields;
     NumMembers      = 2;
 }
 
@@ -166,40 +166,40 @@ template<> void TypeInfoImpl< RenderComponent >::Create()
     //
     
     static const TypeInfo* bases[] = { this, Type<Component>(), nullptr };
-    Inherits = bases;
+    BaseClasses = bases;
 
     
     //
     // class fields
     //
 
-    static Field p[ 3 ];
+    static Field fields[ 3 ];
 
     // 0. Name (inhertied from Component)
 
-    p[ 0 ].Name     = "Name";
-    p[ 0 ].Type     = Type< std::string >();
-    p[ 0 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<RenderComponent*>(o)->Name; };
+    fields[ 0 ].Name     = "Name";
+    fields[ 0 ].Type     = Type< std::string >();
+    fields[ 0 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<RenderComponent*>(o)->Name; };
     
 
     // 1. Enabled (inhertied from Component)
 
-    p[ 1 ].Name     = "Enabled";
-    p[ 1 ].Type     = Type< bool >();
-    p[ 1 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<RenderComponent*>(o)->Enabled; };
+    fields[ 1 ].Name     = "Enabled";
+    fields[ 1 ].Type     = Type< bool >();
+    fields[ 1 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<RenderComponent*>(o)->Enabled; };
     
 
     // 2. Mesh
 
-    p[ 2 ].Name     = "Mesh";
-    p[ 2 ].Type     = Type< RenderMesh >();
-    p[ 2 ].IsPointer= true;
-    p[ 2 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<RenderComponent*>(o)->Mesh; };
+    fields[ 2 ].Name     = "Mesh";
+    fields[ 2 ].Type     = Type< RenderMesh >();
+    fields[ 2 ].IsPointer= true;
+    fields[ 2 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<RenderComponent*>(o)->Mesh; };
     
 
     // set fields
 
-    Fields          = p;
+    Fields          = fields;
     NumMembers      = 3;
 }
 
@@ -216,39 +216,39 @@ template<> void TypeInfoImpl< PhysicsComponent >::Create()
     //
     
     static const TypeInfo* bases[] = { this, Type<Component>(), nullptr };
-    Inherits = bases;
+    BaseClasses = bases;
 
     
     //
     // class fields
     //
 
-    static Field p[ 3 ];
+    static Field fields[ 3 ];
 
     // 0. Name (inhertied from Component)
 
-    p[ 0 ].Name     = "Name";
-    p[ 0 ].Type     = Type< std::string >();
-    p[ 0 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<PhysicsComponent*>(o)->Name; };
+    fields[ 0 ].Name     = "Name";
+    fields[ 0 ].Type     = Type< std::string >();
+    fields[ 0 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<PhysicsComponent*>(o)->Name; };
     
 
     // 1. Enabled (inhertied from Component)
 
-    p[ 1 ].Name     = "Enabled";
-    p[ 1 ].Type     = Type< bool >();
-    p[ 1 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<PhysicsComponent*>(o)->Enabled; };
+    fields[ 1 ].Name     = "Enabled";
+    fields[ 1 ].Type     = Type< bool >();
+    fields[ 1 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<PhysicsComponent*>(o)->Enabled; };
     
 
     // 2. CollisionType
 
-    p[ 2 ].Name     = "CollisionType";
-    p[ 2 ].Type     = Type< PhysicsComponent::Type >();
-    p[ 2 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<PhysicsComponent*>(o)->CollisionType; };
+    fields[ 2 ].Name     = "CollisionType";
+    fields[ 2 ].Type     = Type< PhysicsComponent::Type >();
+    fields[ 2 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<PhysicsComponent*>(o)->CollisionType; };
     
 
     // set fields
 
-    Fields          = p;
+    Fields          = fields;
     NumMembers      = 3;
 }
 
@@ -297,46 +297,46 @@ template<> void TypeInfoImpl< CollisionComponent >::Create()
     //
     
     static const TypeInfo* bases[] = { this, Type<PhysicsComponent>(), Type<Component>(), nullptr };
-    Inherits = bases;
+    BaseClasses = bases;
 
     
     //
     // class fields
     //
 
-    static Field p[ 4 ];
+    static Field fields[ 4 ];
 
     // 0. Name (inhertied from Component)
 
-    p[ 0 ].Name     = "Name";
-    p[ 0 ].Type     = Type< std::string >();
-    p[ 0 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<CollisionComponent*>(o)->Name; };
+    fields[ 0 ].Name     = "Name";
+    fields[ 0 ].Type     = Type< std::string >();
+    fields[ 0 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<CollisionComponent*>(o)->Name; };
     
 
     // 1. Enabled (inhertied from Component)
 
-    p[ 1 ].Name     = "Enabled";
-    p[ 1 ].Type     = Type< bool >();
-    p[ 1 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<CollisionComponent*>(o)->Enabled; };
+    fields[ 1 ].Name     = "Enabled";
+    fields[ 1 ].Type     = Type< bool >();
+    fields[ 1 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<CollisionComponent*>(o)->Enabled; };
     
 
     // 2. CollisionType (inhertied from PhysicsComponent)
 
-    p[ 2 ].Name     = "CollisionType";
-    p[ 2 ].Type     = Type< PhysicsComponent::Type >();
-    p[ 2 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<CollisionComponent*>(o)->CollisionType; };
+    fields[ 2 ].Name     = "CollisionType";
+    fields[ 2 ].Type     = Type< PhysicsComponent::Type >();
+    fields[ 2 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<CollisionComponent*>(o)->CollisionType; };
     
 
     // 3. CollisionResonse
 
-    p[ 3 ].Name     = "CollisionResonse";
-    p[ 3 ].Type     = Type< CollisionComponent::Response >();
-    p[ 3 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<CollisionComponent*>(o)->CollisionResonse; };
+    fields[ 3 ].Name     = "CollisionResonse";
+    fields[ 3 ].Type     = Type< CollisionComponent::Response >();
+    fields[ 3 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<CollisionComponent*>(o)->CollisionResonse; };
     
 
     // set fields
 
-    Fields          = p;
+    Fields          = fields;
     NumMembers      = 4;
 }
 
@@ -385,57 +385,57 @@ template<> void TypeInfoImpl< ScriptComponent >::Create()
     //
     
     static const TypeInfo* bases[] = { this, Type<Component>(), nullptr };
-    Inherits = bases;
+    BaseClasses = bases;
 
     
     //
     // class fields
     //
 
-    static Field p[ 4 ];
+    static Field fields[ 4 ];
 
     // 0. Name (inhertied from Component)
 
-    p[ 0 ].Name     = "Name";
-    p[ 0 ].Type     = Type< std::string >();
-    p[ 0 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<ScriptComponent*>(o)->Name; };
+    fields[ 0 ].Name     = "Name";
+    fields[ 0 ].Type     = Type< std::string >();
+    fields[ 0 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<ScriptComponent*>(o)->Name; };
     
 
     // 1. Enabled (inhertied from Component)
 
-    p[ 1 ].Name     = "Enabled";
-    p[ 1 ].Type     = Type< bool >();
-    p[ 1 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<ScriptComponent*>(o)->Enabled; };
+    fields[ 1 ].Name     = "Enabled";
+    fields[ 1 ].Type     = Type< bool >();
+    fields[ 1 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<ScriptComponent*>(o)->Enabled; };
     
 
     // 2. Script
 
-    p[ 2 ].Name     = "Script";
-    p[ 2 ].Type     = Type< std::string >();
-    p[ 2 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<ScriptComponent*>(o)->Script; };
+    fields[ 2 ].Name     = "Script";
+    fields[ 2 ].Type     = Type< std::string >();
+    fields[ 2 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<ScriptComponent*>(o)->Script; };
     
 
     // 3. SomeValue
 
-    p[ 3 ].Name     = "SomeValue";
-    p[ 3 ].Type     = Type< float >();
-    p[ 3 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<ScriptComponent*>(o)->SomeValue; };
+    fields[ 3 ].Name     = "SomeValue";
+    fields[ 3 ].Type     = Type< float >();
+    fields[ 3 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<ScriptComponent*>(o)->SomeValue; };
     
-    static Attr p3_attrs[ 2 ];
+    static Attr field3_attrs[ 2 ];
 
-    p3_attrs[ 0 ].Key     = "min";
-    p3_attrs[ 0 ].Value   = "5";
+    field3_attrs[ 0 ].Key     = "min";
+    field3_attrs[ 0 ].Value   = "5";
 
-    p3_attrs[ 1 ].Key     = "max";
-    p3_attrs[ 1 ].Value   = "31";
+    field3_attrs[ 1 ].Key     = "max";
+    field3_attrs[ 1 ].Value   = "31";
 
-    p[3].Attrs       = p3_attrs;
-    p[3].NumAttrs    = 2;
+    fields[3].Attrs       = field3_attrs;
+    fields[3].NumAttrs    = 2;
 
 
     // set fields
 
-    Fields          = p;
+    Fields          = fields;
     NumMembers      = 4;
 }
 
@@ -452,36 +452,36 @@ template<> void TypeInfoImpl< GameObject >::Create()
     //
     
     static const TypeInfo* bases[] = { this, nullptr };
-    Inherits = bases;
+    BaseClasses = bases;
 
     
     //
     // class fields
     //
 
-    static Field p[ 4 ];
+    static Field fields[ 4 ];
 
     // 0. Name
 
-    p[ 0 ].Name     = "Name";
-    p[ 0 ].Type     = Type< std::string >();
-    p[ 0 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<GameObject*>(o)->Name; };
+    fields[ 0 ].Name     = "Name";
+    fields[ 0 ].Type     = Type< std::string >();
+    fields[ 0 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<GameObject*>(o)->Name; };
     
 
     // 1. Position
 
-    p[ 1 ].Name     = "Position";
-    p[ 1 ].Type     = Type< Vector3 >();
-    p[ 1 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<GameObject*>(o)->Position; };
+    fields[ 1 ].Name     = "Position";
+    fields[ 1 ].Type     = Type< Vector3 >();
+    fields[ 1 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<GameObject*>(o)->Position; };
     
 
     // 2. Components
 
-    p[ 2 ].Name     = "Components";
-    p[ 2 ].Type     = Type< Component >();
-    p[ 2 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<GameObject*>(o)->Components; };
-    p[ 2 ].IsArray  = true;
-    p[ 2 ].Iterator = []( void* o ) -> std::function< std::pair< void*,const TypeInfo* >() >
+    fields[ 2 ].Name     = "Components";
+    fields[ 2 ].Type     = Type< Component >();
+    fields[ 2 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<GameObject*>(o)->Components; };
+    fields[ 2 ].IsArray  = true;
+    fields[ 2 ].Iterator = []( void* o ) -> std::function< std::pair< void*,const TypeInfo* >() >
     {
         auto obj = reinterpret_cast<GameObject*>( o );
         auto itr = std::begin( obj->Components );
@@ -494,7 +494,7 @@ template<> void TypeInfoImpl< GameObject >::Create()
             return std::make_pair( cur, cur->GetType() );
         };
     };
-    p[ 2 ].Inserter = []( void* o, int size ) -> std::function< bool(void*) >
+    fields[ 2 ].Inserter = []( void* o, int size ) -> std::function< bool(void*) >
     {
         auto obj = reinterpret_cast<GameObject*>( o );
         obj->Components.reserve( obj->Components.size() + size );
@@ -509,11 +509,11 @@ template<> void TypeInfoImpl< GameObject >::Create()
 
     // 3. Children
 
-    p[ 3 ].Name     = "Children";
-    p[ 3 ].Type     = this;
-    p[ 3 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<GameObject*>(o)->Children; };
-    p[ 3 ].IsArray  = true;
-    p[ 3 ].Iterator = []( void* o ) -> std::function< std::pair< void*,const TypeInfo* >() >
+    fields[ 3 ].Name     = "Children";
+    fields[ 3 ].Type     = this;
+    fields[ 3 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<GameObject*>(o)->Children; };
+    fields[ 3 ].IsArray  = true;
+    fields[ 3 ].Iterator = []( void* o ) -> std::function< std::pair< void*,const TypeInfo* >() >
     {
         auto obj = reinterpret_cast<GameObject*>( o );
         auto itr = std::begin( obj->Children );
@@ -526,7 +526,7 @@ template<> void TypeInfoImpl< GameObject >::Create()
             return std::make_pair( cur, cur->GetType() );
         };
     };
-    p[ 3 ].Inserter = []( void* o, int size ) -> std::function< bool(void*) >
+    fields[ 3 ].Inserter = []( void* o, int size ) -> std::function< bool(void*) >
     {
         auto obj = reinterpret_cast<GameObject*>( o );
         obj->Children.reserve( obj->Children.size() + size );
@@ -541,7 +541,7 @@ template<> void TypeInfoImpl< GameObject >::Create()
 
     // set fields
 
-    Fields          = p;
+    Fields          = fields;
     NumMembers      = 4;
 }
 

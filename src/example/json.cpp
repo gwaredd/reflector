@@ -77,10 +77,9 @@ void* ExampleRead( void* obj, const Document::GenericValue& node )
         return nullptr;
     }
     
-    auto& registry = gw::RTTI::Registry::Instance();
     auto type = node[ "Type" ].GetString();
     
-    auto typeInfo = registry.Find( type );
+    auto typeInfo = gw::RTTI::Find( type );
     
     if( typeInfo == nullptr )
     {
@@ -171,7 +170,7 @@ void* ExampleRead( void* obj, const Document::GenericValue& node )
                 }
                 
                 auto& elementNode = *itr;
-                auto elementType = registry.Find( elementNode[ "Type" ].GetString() );
+                auto elementType = gw::RTTI::Find( elementNode[ "Type" ].GetString() );
                 
                 if( elementType->IsA( field->Type ) == false )
                 {

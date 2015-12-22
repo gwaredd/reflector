@@ -18,28 +18,28 @@
     Constants       = e;
     NumMembers      = {{= decl.constants.length }};#}}{{## def.inherits:
     static const TypeInfo* bases[] = { this{{~ decl.inherits : base }}, Type<{{= base.type }}>(){{~}}, nullptr };
-    Inherits = bases;
+    BaseClasses = bases;
 #}}{{## def.fields:{{? decl.fields && decl.fields.length }}
     //
     // class fields
     //
 
-    static Field p[ {{= decl.fields.length }} ];
+    static Field fields[ {{= decl.fields.length }} ];
 {{~ decl.fields : f:fi }}
     // {{= fi}}. {{= f.name }}{{? f.from }} (inhertied from {{= f.from }}){{?}}
 
-    p[ {{=fi}} ].Name     = "{{= f.name }}";
-    p[ {{=fi}} ].Type     = {{? f.type != "this" }}Type< {{= f.type }} >(){{??}}this{{?}};{{? f.pointer }}
-    p[ {{=fi}} ].IsPointer= true;{{?}}
-    p[ {{=fi}} ].Get      = []( void* o ) -> void* { return &reinterpret_cast<{{= decl.name }}*>(o)->{{= f.name }}; };{{# def.itr }}
-    {{# def.attrs:{ decl:f, name:"p" + fi + "_attrs", prefix:"p[" + fi + "]" } }}
+    fields[ {{=fi}} ].Name     = "{{= f.name }}";
+    fields[ {{=fi}} ].Type     = {{? f.type != "this" }}Type< {{= f.type }} >(){{??}}this{{?}};{{? f.pointer }}
+    fields[ {{=fi}} ].IsPointer= true;{{?}}
+    fields[ {{=fi}} ].Get      = []( void* o ) -> void* { return &reinterpret_cast<{{= decl.name }}*>(o)->{{= f.name }}; };{{# def.itr }}
+    {{# def.attrs:{ decl:f, name:"field" + fi + "_attrs", prefix:"fields[" + fi + "]" } }}
 {{~}}
     // set fields
 
-    Fields          = p;
+    Fields          = fields;
     NumMembers      = {{= decl.fields.length }};{{?}}#}}{{## def.itr:{{? f.iterator }}{{? f.iterator == "vector*" }}
-    p[ {{=fi}} ].IsArray  = true;
-    p[ {{=fi}} ].Iterator = []( void* o ) -> std::function< std::pair< void*,const TypeInfo* >() >
+    fields[ {{=fi}} ].IsArray  = true;
+    fields[ {{=fi}} ].Iterator = []( void* o ) -> std::function< std::pair< void*,const TypeInfo* >() >
     {
         auto obj = reinterpret_cast<{{= decl.name }}*>( o );
         auto itr = std::begin( obj->{{= f.name }} );
@@ -52,7 +52,7 @@
             return std::make_pair( cur, cur->GetType() );
         };
     };
-    p[ {{=fi}} ].Inserter = []( void* o, int size ) -> std::function< bool(void*) >
+    fields[ {{=fi}} ].Inserter = []( void* o, int size ) -> std::function< bool(void*) >
     {
         auto obj = reinterpret_cast<{{= decl.name }}*>( o );
         obj->{{= f.name }}.reserve( obj->{{= f.name }}.size() + size );

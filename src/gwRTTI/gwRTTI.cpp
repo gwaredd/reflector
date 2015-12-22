@@ -8,6 +8,47 @@ namespace gw
     namespace RTTI
     {
         ////////////////////////////////////////////////////////////////////////////////
+        
+        class Registry
+        {
+            public:
+                
+                // as we can't guarentee the global ctor order, new up the Registry on demand
+            
+                static Registry* Instance()
+                {
+                    if( sRegistry == nullptr )
+                    {
+                        sRegistry=  new Registry();
+                    }
+                    
+                    return sRegistry;
+                }
+                
+                const TypeInfo*     Find( const char* );
+                TypeInfo*           Create( const char* );
+            
+                
+            protected:
+            
+                static Registry* sRegistry;
+                std::map< std::string, TypeInfo > mTypes;
+        };
+        
+        Registry* Registry::sRegistry = nullptr;
+        
+        const TypeInfo* Find( const char* name )
+        {
+            return Registry::Instance()->Find( name );
+        }
+        
+        const TypeInfo* Create( const char* name )
+        {
+            return Registry::Instance()->Create( name );
+        }
+        
+        
+        ////////////////////////////////////////////////////////////////////////////////
         // quick string hashing function
         
         static uint64_t DJB2_64( const char* str )
@@ -27,6 +68,7 @@ namespace gw
         
 
         ////////////////////////////////////////////////////////////////////////////////
+        // for convenience - standard conversion of value types to strings
         
         static const char* EnumTypeToString( const TypeInfo* type, void* obj, char* buffer, int size )
         {
@@ -90,7 +132,6 @@ namespace gw
             return buffer;
         }
         
-        
         const char* ValueTypeToString( const TypeInfo* type, void* obj, char* buffer, int size )
         {
             // validate params
@@ -121,6 +162,7 @@ namespace gw
 
         
         ////////////////////////////////////////////////////////////////////////////////
+        // for convenience - standard conversion of strings -> value types
         
         static bool EnumTypeFromString( const TypeInfo* type, void* obj, const char* buffer )
         {
@@ -200,11 +242,11 @@ namespace gw
         
         bool TypeInfo::IsA( const TypeInfo* type ) const
         {
-            const TypeInfo** info = Inherits;
+            const TypeInfo** info = BaseClasses;
 
             do
             {
-                if( (*info)->UID == type->UID )
+                if( *info == type )
                 {
                     return true;
                 }
@@ -218,75 +260,71 @@ namespace gw
         
         
         ////////////////////////////////////////////////////////////////////////////////
-        
-        void* TypeInfo::GetField( void* obj, const char* name ) const
-        {
-            if( IsEnum )
-            {
-                return nullptr;
-            }
-            
-            for( auto i=0; i < NumMembers; ++i )
-            {
-                if( strcmp( Fields[ i ].Name, name ) != 0 )
-                {
-                    continue;
-                }
-                
-                auto get = Fields[ i ].Get;
-                return get ? get( obj ) : nullptr;
-            }
-            
-            return nullptr;
-        }
 
-
-        
-        ////////////////////////////////////////////////////////////////////////////////
-
-        const TypeInfo* Registry::Find( const char* name  )
+        const TypeInfo* Registry::Find( const char* name )
         {
             auto itr = mTypes.find( name );
             return itr != mTypes.end() ? &itr->second : nullptr;
         }
         
-
-        ////////////////////////////////////////////////////////////////////////////////
         
-        TypeInfo* Registry::FindOrCreate( const char* func )
+        ////////////////////////////////////////////////////////////////////////////////
+        // extract type name from function signature
+
+        std::string ExtractName( const char* func )
         {
-            // extract type name from function signature
+            // function signatures look something like this ...
+            //  static const gw::RTTI::TypeInfo *gw::RTTI::TypeInfoImpl< std::string<char> >::Initialise()
             
             std::string name;
+            
+            // extract the type from within the <>
             
             auto start = strchr( func, '<' );
             
             if( start )
             {
-                auto end = strchr( ++start, '>' );
-                name = end ? std::string( start, end - start ) : func;
+                // balance the <>
+                
+                auto end   = ++start;
+                auto count = 1;
+                
+                while( *end )
+                {
+                    if( *end == '<' )
+                    {
+                        ++count;
+                    }
+                    else if( *end == '>' )
+                    {
+                        if( --count == 0 )
+                        {
+                            break;
+                        }
+                    }
+                    
+                    ++end;
+                }
+                
+                name = *end ? std::string( start, end - start ) : func;
             }
             else
             {
                 name = func;
             }
             
-            // return existing if it exists
-            
-            auto itr = mTypes.find( name );
-            
-            if( itr != mTypes.end() )
-            {
-                return &itr->second;
-            }
-            
-            // otherwise create new entry
-            
+            return name;
+        }
+
+
+        ////////////////////////////////////////////////////////////////////////////////
+        
+        TypeInfo* Registry::Create( const char* name )
+        {
             auto info = &mTypes[ name ];
             
             info->Name  = name;
-            info->UID   = ++mID;
-            info->Hash  = DJB2_64( info->Name.c_str() );
+            info->Hash  = DJB2_64( name );
             
             return info;
         }

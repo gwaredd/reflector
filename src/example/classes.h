@@ -52,8 +52,8 @@ struct Vector3
 
 class Component
 {
-    gwRTTI;
-
+    gwRTTI( Component );
+    
     public:
 
         std::string Name;
@@ -71,7 +71,7 @@ class Component
 
 class RenderComponent : public Component
 {
-    gwRTTI;
+    gwRTTI( RenderComponent );
 
     public:
 
@@ -97,7 +97,7 @@ class RenderComponent : public Component
 
 class PhysicsComponent : public Component
 {
-    gwRTTI;
+    gwRTTI( PhysicsComponent );
 
     public:
 
@@ -119,7 +119,7 @@ class PhysicsComponent : public Component
 
 class CollisionComponent : public PhysicsComponent
 {
-    gwRTTI;
+    gwRTTI( CollisionComponent );
 
     public:
 
@@ -141,7 +141,7 @@ class CollisionComponent : public PhysicsComponent
 
 class ScriptComponent : public Component
 {
-    gwRTTI;
+    gwRTTI( ScriptComponent );
 
     public:
 
@@ -170,7 +170,7 @@ class ScriptComponent : public Component
 
 class GameObject
 {
-    gwRTTI;
+    gwRTTI( GameObject );
 
     public:
 
