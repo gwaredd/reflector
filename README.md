@@ -1,7 +1,7 @@
 # reflector
 > A clang based tool for generating RTTI data from C/C++ code
 
-This is the prototype code for the accompanying blog post (TBD).
+This is the accompanying prototype code for the accompanying blog post (coming soon ...).
 
 ## Getting Setup
 
@@ -40,7 +40,7 @@ mv reflector/llvm/tools/clang/tools/reflector/ llvm/tools/clang/tools/
 
 **Make the things!**
 
-If you are on a unix like environment (e.g. osx) you can use cmake to generate make files like this ...
+If you are on a UNIX like environment (e.g. osx) you can use cmake to generate make files like this ...
 
 ```bash
 mkdir build
@@ -65,7 +65,7 @@ This should output JSON data to the stdout.
 
 ### Envision
 
-Envision is a coffeescript script that takes the JSON data created by reflector and compiles it into C++ source targetted at the prototype gwRTTI library (`src/gwRTTI/`).
+Envision is a coffeescript script that takes the JSON data created by reflector and compiles it into C++ source targeted at the prototype gwRTTI library (`src/gwRTTI/`).
 
 This requires [node.js](https://nodejs.org/) and [coffeescript](http://coffeescript.org/).
 
@@ -74,7 +74,7 @@ This requires [node.js](https://nodejs.org/) and [coffeescript](http://coffeescr
 
 This installs the `npm` package manager required for the next two steps.
 
-**Install cofeescript**
+**Install coffeescript**
 
 ```bash
 npm -g install coffee-script
