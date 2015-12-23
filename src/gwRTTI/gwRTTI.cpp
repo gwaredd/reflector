@@ -31,52 +31,6 @@ namespace gw
         }
         
         
-        ////////////////////////////////////////////////////////////////////////////////
-        // extract type name from function signature
-        
-        static std::string ExtractName( const char* func )
-        {
-            // function signatures look something like this ...
-            //
-            //  "static const gw::RTTI::TypeInfo *gw::RTTI::TypeInfoImpl< std::string<char> >::Initialise()"
-            //
-            
-            // extract the type from within the first <...>
-            
-            if( auto start = strchr( func, '<' ) )
-            {
-                // balance the <...>
-                
-                auto end   = ++start;
-                auto count = 1;
-                
-                while( *end )
-                {
-                    if( *end == '<' )
-                    {
-                        ++count;
-                    }
-                    else if( *end == '>' )
-                    {
-                        if( --count == 0 )
-                        {
-                            break;
-                        }
-                    }
-                    
-                    ++end;
-                }
-                
-                if( *end )
-                {
-                    return std::string( start, end - start );
-                }
-            }
-            
-            return std::string( func );
-        }
-        
-        
         //------------------------------------------------------------------------------
         // Registry
         //------------------------------------------------------------------------------
@@ -140,9 +94,8 @@ namespace gw
             return Registry::Instance()->Find( name );
         }
         
-        const TypeInfo* FindOrCreate( const char* funcsig )
+        const TypeInfo* FindOrCreate( const char* name )
         {
-            auto name       = ExtractName( funcsig ).c_str();
             auto registry   = Registry::Instance();
             auto info       = registry->Find( name );
             

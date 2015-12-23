@@ -196,13 +196,24 @@ namespace gw
             {
                 extern GWRTTI_API const TypeInfo* FindOrCreate( const char* );
                 
-                static const TypeInfo* info = FindOrCreate( gwRTTI_FUNCSIG );
+                static const TypeInfo* info = FindOrCreate( TypeInfoImpl<T>::GetName() );
                 return info;
             }
             
-        
+
             //
-            // use template specialisation to setup custom type ...
+            // gwRTTI_REGISTER will specialise this function for use, fall back for
+            // unregistered types is to use the function signature
+            //
+            
+            static const char* GetName()
+            {
+                return gwRTTI_FUNCSIG;
+            }
+            
+        
+            // specialise this function for custom TypeInfo implementation
+
             //
             //  template<> void TypeInfoImpl< Vector3 >::Create()
             //  {
@@ -250,7 +261,6 @@ namespace gw
                 
                 auto info = TypeInfoImpl<T>::GetType();
                 
-                
                 // now fill out entry
                 
                 auto impl = static_cast< TypeInfoImpl<T>* >( const_cast<TypeInfo*>( info ) );
@@ -288,7 +298,9 @@ namespace gw
 
         #define __gwRTTI_REGISTER_CONCAT(a,b) a##b
         #define __gwRTTI_REGISTER_CREATENAME(c) __gwRTTI_REGISTER_CONCAT( __gw_rtti_, c )
-        #define gwRTTI_REGISTER(t) static gw::RTTI::Register<t> __gwRTTI_REGISTER_CREATENAME( __COUNTER__ );
+        #define gwRTTI_REGISTER(T) \
+            template<> const char* gw::RTTI::TypeInfoImpl<T>::GetName() { return #T; } \
+            static gw::RTTI::Register<T> __gwRTTI_REGISTER_CREATENAME( __COUNTER__ );
 
 
         ////////////////////////////////////////////////////////////////////////////////
