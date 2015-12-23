@@ -147,7 +147,7 @@ class ScriptComponent : public Component
 
         std::string Script;
 
-        ///%% min=5, max=31
+        ///%% min=5, max=31 -- some custom attributes
         float       SomeValue;
 
         ///%! -- don't reflect this
@@ -185,7 +185,7 @@ class GameObject
 
     private:
 
-        // private members are removed from the TypeInfo
+        // private members aren't reflected
 
         float SecretValue;
 };
