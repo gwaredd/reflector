@@ -16,7 +16,7 @@ void ExampleWrite( PrettyWriter< FileWriteStream >& writer, const TypeInfo* info
     writer.StartObject();
    
     writer.String( "Type" );
-    writer.String( info->Name.c_str() );
+    writer.String( info->Name );
 
     if( info->Fields )
     {
@@ -79,7 +79,7 @@ void* ExampleRead( void* obj, const Document::GenericValue& node )
     
     auto type = node[ "Type" ].GetString();
     
-    auto typeInfo = gw::RTTI::Find( type );
+    auto typeInfo = gw::RTTI::Registry::Instance().Find( type );
     
     if( typeInfo == nullptr )
     {
@@ -170,7 +170,7 @@ void* ExampleRead( void* obj, const Document::GenericValue& node )
                 }
                 
                 auto& elementNode = *itr;
-                auto elementType = gw::RTTI::Find( elementNode[ "Type" ].GetString() );
+                auto elementType = gw::RTTI::Registry::Instance().Find( elementNode[ "Type" ].GetString() );
                 
                 if( elementType->IsA( field->Type ) == false )
                 {

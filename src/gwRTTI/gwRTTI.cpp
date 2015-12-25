@@ -11,10 +11,6 @@ namespace gw
         // util functions
         //------------------------------------------------------------------------------
         
-        
-        ////////////////////////////////////////////////////////////////////////////////
-        // quick string hashing function
-        
         static uint32_t DJB2( const char* str )
         {
             uint32_t hash = 5381;
@@ -34,74 +30,27 @@ namespace gw
         //------------------------------------------------------------------------------
         // Registry
         //------------------------------------------------------------------------------
-        
-        class Registry
-        {
-            public:
-                
-                // as we can't guarentee the global ctor order, new up the Registry on demand
-            
-                static Registry* Instance()
-                {
-                    static Registry* registry = nullptr;
-                    
-                    if( registry == nullptr )
-                    {
-                        registry = new Registry();
-                    }
-                    
-                    return registry;
-                }
-                
-                const TypeInfo* Find( const char* );
-                const TypeInfo* Create( const char* );
-            
-                
-            protected:
-            
-                std::map< std::string, TypeInfo > mTypes;
-        };
-
-        
-        ////////////////////////////////////////////////////////////////////////////////
 
         const TypeInfo* Registry::Find( const char* name )
         {
-            auto itr = mTypes.find( name );
-            return itr != mTypes.end() ? &itr->second : nullptr;
+            auto itr = mTypesByName.find( DJB2( name ) );
+            return itr != mTypesByName.end() ? itr->second : nullptr;
         }
         
-        
-        ////////////////////////////////////////////////////////////////////////////////
-        
-        const TypeInfo* Registry::Create( const char* name )
+        const TypeInfo* Registry::FindOrCreate( const char* funcsig )
         {
-            auto info = &mTypes[ name ];
-            
-            info->Name  = name;
-            info->Hash  = DJB2( name );
-            
-            return info;
+            return &mTypes[ DJB2( funcsig ) ];
         }
         
-        
-        
-        ////////////////////////////////////////////////////////////////////////////////
-        // __declspec( dllexport ) functions to ensure registry is the same accross shared boundaries
-        
-        const TypeInfo* Find( const char* name )
+        void Registry::Register( TypeInfo* info )
         {
-            return Registry::Instance()->Find( name );
-        }
-        
-        const TypeInfo* FindOrCreate( const char* name )
-        {
-            auto registry   = Registry::Instance();
-            auto info       = registry->Find( name );
+            info->Hash          = DJB2( info->Name );
+            info->IsRegistered  = true;
             
-            return info ? info : registry->Create( name );
+            mTypesByName[ info->Hash ] = info;
         }
         
+
         
         //------------------------------------------------------------------------------
         // TypeInfo
@@ -131,8 +80,7 @@ namespace gw
         //------------------------------------------------------------------------------
         
         
-        ////////////////////////////////////////////////////////////////////////////////
-        // for convenience - standard conversion of value types to strings
+        // value types to strings
         
         static const char* EnumTypeToString( const TypeInfo* type, void* obj, char* buffer, int size )
         {
@@ -225,8 +173,7 @@ namespace gw
         }
         
         
-        ////////////////////////////////////////////////////////////////////////////////
-        // for convenience - standard conversion of strings -> value types
+        // strings -> value types
         
         static bool EnumTypeFromString( const TypeInfo* type, void* obj, const char* buffer )
         {
