@@ -14,6 +14,8 @@ std::vector< GameObject* > GameObjects;
 
 void Create()
 {
+    srand( (unsigned int) time( nullptr ) );
+    
     for( int i=0; i < 10; i++ )
     {
         auto go = new GameObject();
@@ -114,9 +116,7 @@ void Load( const char* filename )
 
 int main( int argc, char* argv[] )
 {
-    srand( (unsigned int) time( nullptr ) );
-    
-    auto filename = "gameobjects.json";
+    auto filename = argc > 1 ? argv[1] : "gameobjects.json";
     
     /**
     Create();
