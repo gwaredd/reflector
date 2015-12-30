@@ -34,9 +34,15 @@ git clone https://github.com/gwaredd/reflector.git
 ```
 Now move the reflector code into the clang tools source tree (`llvm/tools/clang/tools/reflector`). It will be built as part of the llvm project.
 ```
-mv reflector/src/reflector/ llvm/tools/clang/tools/
+cp -r reflector/src/reflector/ llvm/tools/clang/tools/
 ```
-**NB:** `move` on windows.
+
+Or on windows
+
+```
+robocopy reflector\src\reflector llvm\tools\clang\tools\reflector
+```
+
 
 **Make the things!**
 

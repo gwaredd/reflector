@@ -292,7 +292,8 @@ namespace gw
             }
         };
 
-        // use __COUNTER__ here for unique names ( without spaces, e.g. "unsigned int" )
+        // NB: using __COUNTER__ to create unique names as some types have spaces in them (e.g. "unsigned int" )
+        // otherwise we could just append the type to the symbol name
 
         #define __gwRTTI_REGISTER_CONCAT(a,b) a##b
         #define __gwRTTI_REGISTER_CREATENAME(c) __gwRTTI_REGISTER_CONCAT( __gw_rtti_, c )
