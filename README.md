@@ -30,22 +30,29 @@ cd ../..
 ```
 git clone https://github.com/gwaredd/reflector.git
 ```
-Now move the reflector code into the clang tools source tree (`llvm/tools/clang/tools/reflector`). It will be built as part of the llvm project.
+Copy the reflector code into the clang tools source tree (`llvm/tools/clang/tools/reflector`).
+
+On unix/osx
 ```
 cp -r reflector/src/reflector/ llvm/tools/clang/tools/
 ```
 
-Or on windows
+On windows
 
 ```
 robocopy reflector\src\reflector llvm\tools\clang\tools\reflector
 ```
 
+Add the project to the cmake file, in `llvm/tools/clang/tools/CMakeLists.txt` add ...
+```
+add_clang_subdirectory(reflector)
+```
+
+To the end of the file, it will now be built as part of the llvm project.
 
 **Make the things!**
 
-If you are on a UNIX like environment (e.g. OSX) you can use cmake to generate make files like this ...
-
+Unix/osx/makefiles ...
 ```bash
 mkdir build
 cd build
@@ -58,6 +65,7 @@ Or windows (VS 2015) ...
 mkdir build
 cd build
 cmake -G "Visual Studio 14" ..\llvm
+LLVM.sln
 ```
 
 ***(building may take some time)***
