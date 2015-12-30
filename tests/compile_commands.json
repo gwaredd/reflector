@@ -1,9 +1,5 @@
-[
-{
-
+[{
   "directory": "/Users/gwaredd/Dropbox/Dev/Reflector/tests",
-  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++   -DGTEST_HAS_RTTI=0 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -I/Users/gwaredd/Dropbox/Dev/Reflector/tests -fPIC -fvisibility-inlines-hidden -Wall -W -Wno-unused-parameter -Wwrite-strings -Wcast-qual -Wmissing-field-initializers -pedantic -Wno-long-long -Wcovered-switch-default -Wnon-virtual-dtor -std=c++11 -g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -mmacosx-version-min=10.10 -fno-exceptions -fno-rtti -o test.o -c /Users/gwaredd/Dropbox/Dev/Reflector/tests/test.cpp",
-  "file": "/Users/gwaredd/Dropbox/Dev/Reflector/tests/test.cpp"
-}
-]
-
+  "file": "test.cpp",
+  "command": "c++ -std=c++11 -fno-exceptions -fno-rtti -o test.o -c test.cpp"
+}]

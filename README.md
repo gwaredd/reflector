@@ -5,6 +5,8 @@ This is the accompanying prototype code for my blog post (coming soon ...).
 
 ## Getting Setup
 
+NB: There are pre-built versions of reflector in the bin folder for osx and windows.
+
 ### Reflector (Clang)
 
 Reflector is a clang based tool, it requires the LLVM and Clang source tree. You can get more information on the [official site](http://clang.llvm.org/get_started.html).
@@ -70,12 +72,12 @@ LLVM.sln
 
 ***(building may take some time)***
 
-If this all worked then the reflector binary should be here ... `build/bin/reflector`
+If this all worked then the reflector binary should be here ... `build/bin/reflector` (or `build\debug\bin` on windows)
 
-To test reflector on some code ...
+To test reflector on some code. Edit the file `reflector/tests/compile_commands.json` and replace the directory field with the absolute path to that directory. Then run ...
 
 ```bash
-    ./bin/reflector ../reflector/tests/test.cpp
+    ./bin/reflector --show-errors ../reflector/tests/test.cpp
 ```
 
 This should output JSON data to the stdout.
