@@ -9,8 +9,7 @@
 #include "gwRTTI/gwRTTI.h"
 #include "classes.h"
 
-using namespace gw::RTTI;
-
+namespace gw { namespace RTTI {
 
 ////////////////////////////////////////////////////////////////////////////////
 // common types
@@ -73,11 +72,11 @@ template<> void TypeInfoImpl< Vector3 >::Create()
     //
     // base classes
     //
-    
+
     static const TypeInfo* bases[] = { this, nullptr };
     BaseClasses = bases;
 
-    
+
     //
     // class fields
     //
@@ -89,21 +88,21 @@ template<> void TypeInfoImpl< Vector3 >::Create()
     fields[ 0 ].Name     = "x";
     fields[ 0 ].Type     = Type< float >();
     fields[ 0 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<Vector3*>(o)->x; };
-    
+
 
     // 1. y
 
     fields[ 1 ].Name     = "y";
     fields[ 1 ].Type     = Type< float >();
     fields[ 1 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<Vector3*>(o)->y; };
-    
+
 
     // 2. z
 
     fields[ 2 ].Name     = "z";
     fields[ 2 ].Type     = Type< float >();
     fields[ 2 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<Vector3*>(o)->z; };
-    
+
 
     // set fields
 
@@ -122,11 +121,11 @@ template<> void TypeInfoImpl< Component >::Create()
     //
     // base classes
     //
-    
+
     static const TypeInfo* bases[] = { this, nullptr };
     BaseClasses = bases;
 
-    
+
     //
     // class fields
     //
@@ -138,14 +137,14 @@ template<> void TypeInfoImpl< Component >::Create()
     fields[ 0 ].Name     = "Name";
     fields[ 0 ].Type     = Type< std::string >();
     fields[ 0 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<Component*>(o)->Name; };
-    
+
 
     // 1. Enabled
 
     fields[ 1 ].Name     = "Enabled";
     fields[ 1 ].Type     = Type< bool >();
     fields[ 1 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<Component*>(o)->Enabled; };
-    
+
 
     // set fields
 
@@ -164,11 +163,11 @@ template<> void TypeInfoImpl< RenderComponent >::Create()
     //
     // base classes
     //
-    
+
     static const TypeInfo* bases[] = { this, Type<Component>(), nullptr };
     BaseClasses = bases;
 
-    
+
     //
     // class fields
     //
@@ -180,14 +179,14 @@ template<> void TypeInfoImpl< RenderComponent >::Create()
     fields[ 0 ].Name     = "Name";
     fields[ 0 ].Type     = Type< std::string >();
     fields[ 0 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<RenderComponent*>(o)->Name; };
-    
+
 
     // 1. Enabled (inhertied from Component)
 
     fields[ 1 ].Name     = "Enabled";
     fields[ 1 ].Type     = Type< bool >();
     fields[ 1 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<RenderComponent*>(o)->Enabled; };
-    
+
 
     // 2. Mesh
 
@@ -195,7 +194,7 @@ template<> void TypeInfoImpl< RenderComponent >::Create()
     fields[ 2 ].Type     = Type< RenderMesh >();
     fields[ 2 ].IsPointer= true;
     fields[ 2 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<RenderComponent*>(o)->Mesh; };
-    
+
 
     // set fields
 
@@ -214,11 +213,11 @@ template<> void TypeInfoImpl< PhysicsComponent >::Create()
     //
     // base classes
     //
-    
+
     static const TypeInfo* bases[] = { this, Type<Component>(), nullptr };
     BaseClasses = bases;
 
-    
+
     //
     // class fields
     //
@@ -230,21 +229,21 @@ template<> void TypeInfoImpl< PhysicsComponent >::Create()
     fields[ 0 ].Name     = "Name";
     fields[ 0 ].Type     = Type< std::string >();
     fields[ 0 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<PhysicsComponent*>(o)->Name; };
-    
+
 
     // 1. Enabled (inhertied from Component)
 
     fields[ 1 ].Name     = "Enabled";
     fields[ 1 ].Type     = Type< bool >();
     fields[ 1 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<PhysicsComponent*>(o)->Enabled; };
-    
+
 
     // 2. CollisionType
 
     fields[ 2 ].Name     = "CollisionType";
     fields[ 2 ].Type     = Type< PhysicsComponent::Type >();
     fields[ 2 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<PhysicsComponent*>(o)->CollisionType; };
-    
+
 
     // set fields
 
@@ -263,20 +262,20 @@ template<> void TypeInfoImpl< PhysicsComponent::Type >::Create()
     //
     // constants
     //
-    
+
     static Constant e[ 3 ];
 
     e[ 0 ].Name     = "Sphere";
     e[ 0 ].Value    = 0;
-    
+
 
     e[ 1 ].Name     = "AABB";
     e[ 1 ].Value    = 1;
-    
+
 
     e[ 2 ].Name     = "ConvexHull";
     e[ 2 ].Value    = 2;
-    
+
 
     // set constants
 
@@ -295,11 +294,11 @@ template<> void TypeInfoImpl< CollisionComponent >::Create()
     //
     // base classes
     //
-    
+
     static const TypeInfo* bases[] = { this, Type<PhysicsComponent>(), Type<Component>(), nullptr };
     BaseClasses = bases;
 
-    
+
     //
     // class fields
     //
@@ -311,28 +310,28 @@ template<> void TypeInfoImpl< CollisionComponent >::Create()
     fields[ 0 ].Name     = "Name";
     fields[ 0 ].Type     = Type< std::string >();
     fields[ 0 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<CollisionComponent*>(o)->Name; };
-    
+
 
     // 1. Enabled (inhertied from Component)
 
     fields[ 1 ].Name     = "Enabled";
     fields[ 1 ].Type     = Type< bool >();
     fields[ 1 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<CollisionComponent*>(o)->Enabled; };
-    
+
 
     // 2. CollisionType (inhertied from PhysicsComponent)
 
     fields[ 2 ].Name     = "CollisionType";
     fields[ 2 ].Type     = Type< PhysicsComponent::Type >();
     fields[ 2 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<CollisionComponent*>(o)->CollisionType; };
-    
+
 
     // 3. CollisionResonse
 
     fields[ 3 ].Name     = "CollisionResonse";
     fields[ 3 ].Type     = Type< CollisionComponent::Response >();
     fields[ 3 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<CollisionComponent*>(o)->CollisionResonse; };
-    
+
 
     // set fields
 
@@ -351,20 +350,20 @@ template<> void TypeInfoImpl< CollisionComponent::Response >::Create()
     //
     // constants
     //
-    
+
     static Constant e[ 3 ];
 
     e[ 0 ].Name     = "Bouncy";
     e[ 0 ].Value    = 0;
-    
+
 
     e[ 1 ].Name     = "Hard";
     e[ 1 ].Value    = 1;
-    
+
 
     e[ 2 ].Name     = "Soft";
     e[ 2 ].Value    = 2;
-    
+
 
     // set constants
 
@@ -383,11 +382,11 @@ template<> void TypeInfoImpl< ScriptComponent >::Create()
     //
     // base classes
     //
-    
+
     static const TypeInfo* bases[] = { this, Type<Component>(), nullptr };
     BaseClasses = bases;
 
-    
+
     //
     // class fields
     //
@@ -399,28 +398,28 @@ template<> void TypeInfoImpl< ScriptComponent >::Create()
     fields[ 0 ].Name     = "Name";
     fields[ 0 ].Type     = Type< std::string >();
     fields[ 0 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<ScriptComponent*>(o)->Name; };
-    
+
 
     // 1. Enabled (inhertied from Component)
 
     fields[ 1 ].Name     = "Enabled";
     fields[ 1 ].Type     = Type< bool >();
     fields[ 1 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<ScriptComponent*>(o)->Enabled; };
-    
+
 
     // 2. Script
 
     fields[ 2 ].Name     = "Script";
     fields[ 2 ].Type     = Type< std::string >();
     fields[ 2 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<ScriptComponent*>(o)->Script; };
-    
+
 
     // 3. SomeValue
 
     fields[ 3 ].Name     = "SomeValue";
     fields[ 3 ].Type     = Type< float >();
     fields[ 3 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<ScriptComponent*>(o)->SomeValue; };
-    
+
     static Attr field3_attrs[ 2 ];
 
     field3_attrs[ 0 ].Key     = "min";
@@ -450,11 +449,11 @@ template<> void TypeInfoImpl< GameObject >::Create()
     //
     // base classes
     //
-    
+
     static const TypeInfo* bases[] = { this, nullptr };
     BaseClasses = bases;
 
-    
+
     //
     // class fields
     //
@@ -466,14 +465,14 @@ template<> void TypeInfoImpl< GameObject >::Create()
     fields[ 0 ].Name     = "Name";
     fields[ 0 ].Type     = Type< std::string >();
     fields[ 0 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<GameObject*>(o)->Name; };
-    
+
 
     // 1. Position
 
     fields[ 1 ].Name     = "Position";
     fields[ 1 ].Type     = Type< Vector3 >();
     fields[ 1 ].Get      = []( void* o ) -> void* { return &reinterpret_cast<GameObject*>(o)->Position; };
-    
+
 
     // 2. Components
 
@@ -505,7 +504,7 @@ template<> void TypeInfoImpl< GameObject >::Create()
             return true;
         };
     };
-    
+
 
     // 3. Children
 
@@ -537,7 +536,7 @@ template<> void TypeInfoImpl< GameObject >::Create()
             return true;
         };
     };
-    
+
 
     // set fields
 
@@ -548,3 +547,4 @@ template<> void TypeInfoImpl< GameObject >::Create()
 gwRTTI_REGISTER( GameObject );
 
 
+}}

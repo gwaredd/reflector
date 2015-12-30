@@ -8,4 +8,5 @@ build
 **.xcodeproj
 **.sdf
 **.VC.opendb
+**.gch
 

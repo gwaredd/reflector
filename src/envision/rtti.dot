@@ -9,7 +9,7 @@
 #include "gwRTTI/gwRTTI.h"
 {{~ it.data.includes : inc }}#include "{{= inc }}"
 {{~}}
-using namespace gw::RTTI;
+namespace gw { namespace RTTI {
 
 {{? it.data.misc.length }}
 ////////////////////////////////////////////////////////////////////////////////
@@ -46,3 +46,4 @@ template<> void TypeInfoImpl< {{= decl.name }} >::Create()
 gwRTTI_REGISTER( {{= decl.name }} );
 
 {{~}}
+}}

@@ -19,5 +19,5 @@ struct MODULEA_API VectorA
 
 extern "C"
 {
-    MODULEA_API void ModuleA();
+    MODULEA_API void* ModuleA();
 }

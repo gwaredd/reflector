@@ -54,8 +54,10 @@ int main( int argc, char* argv[] )
     type = Type< class ObjectB >(); // dynamically loaded - no linking or header files
     type = Type< std::string >();
 
+
     UnloadModule( hModule );
 
+    (void) type; // silencing unused variable 'type' warning
     return 0;
 }
 

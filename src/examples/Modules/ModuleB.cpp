@@ -18,21 +18,25 @@ BOOL APIENTRY DllMain( HMODULE, DWORD, LPVOID )
 #include "gwRTTI/gwRTTI.h"
 #include "ModuleB.h"
 
-using namespace gw::RTTI;
-
 
 ////////////////////////////////////////////////////////////////////////////////
 
-MODULEB_API void ModuleB()
+MODULEB_API void* ModuleB()
 {
-    const TypeInfo* type;
-    type = Type< float >();             // defined in RTTI module
-    type = Type< ObjectB >();           // defined in this module
-    type = Type< struct VectorA >();    // defined in ModuleA - we can still get the type despite no linking to that module
+    const gw::RTTI::TypeInfo* type;
+
+    type = gw::RTTI::Type< float >();             // defined in RTTI module
+    type = gw::RTTI::Type< ObjectB >();           // defined in this module
+    type = gw::RTTI::Type< struct VectorA >();    // defined in ModuleA - we can still get the type despite no linking to that module
+
+    return (void*) type;
 }
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // SomeObject
+
+namespace gw { namespace RTTI {
 
 template<> void TypeInfoImpl< ObjectB >::Create()
 {
@@ -64,3 +68,5 @@ template<> void TypeInfoImpl< ObjectB >::Create()
 }
 
 gwRTTI_REGISTER( ObjectB );
+
+}}

@@ -1,12 +1,45 @@
 ################################################################################
 
-CC = g++ -Wall -g -std=c++11 -I..
+CC = g++
+CCFLAGS = -Wall -g -std=c++11 -I..
+
+
+# OS variations on shared libs ...
+
+ifdef SystemRoot # SystemRoot is only set on windows
+
+	$(error "Using MSVC on windows ...")
+
+else
+
+	UNAME := $(shell uname -s)
+
+    ifeq ($(UNAME),Darwin) # OSX
+
+		MODULE_EXT = dylib
+		MODULE_FLAGS = -dynamiclib -current_version 1.0
+
+	else
+
+		MODULE_EXT = so
+		MODULE_FLAGS = -shared
+		CCFLAGS += -fPIC
+		RPATH = -Wl,-rpath,.
+
+    endif
+
+endif
+
+
+################################################################################
+# build targets
 
 EXAMPLE1 = example1
 EXAMPLE2 = example2
-MODULE_A = libModuleA.dylib
-MODULE_B = libModuleB.dylib
-MODULE_RTTI = libModuleRTTI.dylib
+MODULE_A = libModuleA.$(MODULE_EXT)
+MODULE_B = libModuleB.$(MODULE_EXT)
+MODULE_RTTI = libModuleRTTI.$(MODULE_EXT)
+
 
 .PHONY: clean
 
@@ -14,10 +47,11 @@ all:    $(EXAMPLE1) $(MODULE_RTTI) $(MODULE_A) $(MODULE_B) $(EXAMPLE2)
 		@echo done
 
 .cpp.o:
-		$(CC) -c $<  -o $@
+		$(CC) $(CCFLAGS) -c $<  -o $@
 
 clean:
 		$(RM) ../gwRTTI/*.o ./Serialisation/*.o ./Modules/*.o $(EXAMPLE1) $(EXAMPLE2) $(MODULE_A) $(MODULE_B) $(MODULE_RTTI) *~
+
 
 
 ################################################################################
@@ -34,14 +68,14 @@ $(EXAMPLE1): $(EXAMPLE1_OBJS)
 # example 2 - dymamic loading of modules
 
 $(EXAMPLE2): ./Modules/Example2.o
-		$(CC) ./Modules/Example2.o libModuleRTTI.dylib libModuleA.dylib -o $(EXAMPLE2)
+		$(CC) ./Modules/Example2.o $(MODULE_RTTI) $(MODULE_A) -ldl $(RPATH) -o $(EXAMPLE2)
 
 $(MODULE_RTTI): ./Modules/ModuleRTTI.o ../gwRTTI/gwRTTI.o
-		$(CC) -dynamiclib -current_version 1.0 ./Modules/ModuleRTTI.o ../gwRTTI/gwRTTI.o -o $(MODULE_RTTI)
+		$(CC) $(MODULE_FLAGS) ./Modules/ModuleRTTI.o ../gwRTTI/gwRTTI.o -o $(MODULE_RTTI)
 
 $(MODULE_A): ./Modules/ModuleA.o
-		$(CC) -dynamiclib -current_version 1.0 ./Modules/ModuleA.o libModuleRTTI.dylib -o $(MODULE_A)
+		$(CC) $(MODULE_FLAGS) ./Modules/ModuleA.o $(MODULE_RTTI) -o $(MODULE_A)
 
 $(MODULE_B): ./Modules/ModuleB.o
-		$(CC) -dynamiclib -current_version 1.0 ./Modules/ModuleB.o libModuleRTTI.dylib -o $(MODULE_B)
+		$(CC) $(MODULE_FLAGS) ./Modules/ModuleB.o $(MODULE_RTTI) -o $(MODULE_B)
 

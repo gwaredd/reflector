@@ -22,6 +22,6 @@ class MODULEB_API ObjectB
 
 extern "C"
 {
-    MODULEB_API void ModuleB();
+    MODULEB_API void* ModuleB();
 }
 

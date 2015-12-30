@@ -13,17 +13,18 @@
     #define UnloadModule    FreeLibrary
     #define FindSymbol      GetProcAddress
 
-#elif defined( __MACH__ )
+#else
 
     #include <dlfcn.h>
 
-    #define LoadModule(...) dlopen( "libModuleB.dylib", RTLD_LAZY | RTLD_LOCAL );
+    #ifdef __MACH__
+        #define LoadModule(...) dlopen( "libModuleB.dylib", RTLD_LAZY | RTLD_LOCAL );
+    #else
+        #define LoadModule(...) dlopen( "libModuleB.so", RTLD_LAZY | RTLD_LOCAL );
+    #endif
+
     #define UnloadModule    dlclose
     #define FindSymbol      dlsym
-
-#else
-
-    #error unknown platform
 
 #endif
 
