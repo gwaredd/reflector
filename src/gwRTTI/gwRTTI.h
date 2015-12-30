@@ -17,6 +17,9 @@
     #define gwDLL_IMPORT        __declspec( dllimport )
     #define gwRTTI_FUNCSIG      __FUNCSIG__
     #define gw_stricmp          _stricmp
+    #define gw_strnicmp         _strnicmp
+    #define gw_sprintf          sprintf_s
+    #define gw_sscanf           sscanf_s
 
 #elif defined( __GNUC__ )
 
@@ -24,6 +27,9 @@
     #define gwDLL_IMPORT        __attribute__ ((visibility ("default")))
     #define gwRTTI_FUNCSIG      __PRETTY_FUNCTION__
     #define gw_stricmp          strcasecmp
+    #define gw_strnicmp         strncasecmp
+    #define gw_sprintf          snprintf
+    #define gw_sscanf           sscanf
 
 #else
 
@@ -32,7 +38,7 @@
 #endif
 
 #ifdef _USRDLL
-    #ifdef GWRTTI_EXPORTS
+    #ifdef MODULERTTI_EXPORTS
         #define GWRTTI_API gwDLL_EXPORT
     #else
         #define GWRTTI_API gwDLL_IMPORT
@@ -40,7 +46,6 @@
 #else
     #define GWRTTI_API
 #endif
-
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -59,25 +64,17 @@ namespace gw
         {
             public:
                 
-                static Registry& Instance()
-                {
-                    static Registry registry;
-                    return registry;
-                }
-                
-                const TypeInfo* Find( const char* name );
-            
+                static const TypeInfo* Find( const char* name );
+                static void Dump();
+
                 
             protected:
             
                 template<typename T> friend struct TypeInfoImpl;
-                const TypeInfo* FindOrCreate( const char* funcsig );
+                static const TypeInfo* FindOrCreate( const char* funcsig );
             
                 template<typename T> friend struct Register;
-                void Register( TypeInfo* );
-            
-                std::map< uint32_t, TypeInfo >  mTypes;
-                std::map< uint32_t, TypeInfo* > mTypesByName;
+                static void Register( TypeInfo* );
         };
         
         
@@ -187,7 +184,8 @@ namespace gw
             
             TypeInfo()
             
-                : Hash( ~0 )
+                : Name( nullptr )
+                , Hash( ~0 )
                 , BaseClasses( nullptr )
             
                 , Instantiate( nullptr )
@@ -222,21 +220,25 @@ namespace gw
                 // use "register" here to hold a pointer here (rather than using a static variable)
                 // so we can support dynamic loading of types from multiple modules
                 
-                static const TypeInfo* info = Registry::Instance().FindOrCreate( gwRTTI_FUNCSIG );
+                static const TypeInfo* info = Registry::FindOrCreate( gwRTTI_FUNCSIG );
                 return info;
             }
             
             
+            //
             // specialise this function for custom TypeInfo implementation
+            //
+
             void Create() {}
             
-            //
-            //  template<> void TypeInfoImpl< Vector3 >::Create()
-            //  {
-            //  }
-            //
-            //  gwRTTI_REGISTER( Vector3 );
-            //
+                //
+                //  template<> void TypeInfoImpl< Vector3 >::Create()
+                //  {
+                //      ...
+                //  }
+                //
+                //  gwRTTI_REGISTER( Vector3 );
+                //
         };
         
         
@@ -262,8 +264,10 @@ namespace gw
                 
                 // fill out entry with default values
                 
+
+                
                 impl->Name              = name;
-                impl->Instantiate       = std::is_constructible<T>::value ? []() -> void* { return new T(); } : nullptr;
+                impl->Instantiate       = std::is_constructible<T>::value ? (void*(*)())( []() -> void* { return new T(); } ) : nullptr;
                 impl->IsFundamental     = std::is_fundamental<T>::value;
                 impl->IsEnum            = std::is_enum<T>::value;
                 impl->IsPOD             = std::is_pod<T>::value;
@@ -276,7 +280,7 @@ namespace gw
                 
                 // register
                 
-                Registry::Instance().Register( impl );
+                Registry::Register( impl );
                 
                 // custom type instantiation
                 

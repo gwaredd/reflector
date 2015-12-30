@@ -1,15 +1,11 @@
-out
 node_modules
-_ref
+Debug
 
-thirdparty
 llvm
 build
-src/playground
-
-# tools
 
 **.suo
 **.xcodeproj
-**.vcxproj.*
+**.sdf
+**.VC.opendb
 

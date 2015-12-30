@@ -41,7 +41,7 @@ bool RandomChance()
 GameObject* GameObject::CreateRandom( bool children )
 {
     char id[ 8 ];
-    sprintf( id, "%i", ++ID );
+    gw_sprintf( id, 8, "%i", ++ID );
     
     Name = "Object";
     Name += id;
