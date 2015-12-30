@@ -55,7 +55,12 @@ cmake -G "Unix Makefiles" ../llvm
 make
 ```
 
-On windows you may prefer to generate a Visual Studio project instead (e.g. `cmake -G "Visual Studio 12" ..\llvm`).
+Or windows (VS 2015) ...
+```bash
+mkdir build
+cd build
+cmake -G "Visual Studio 14" ..\llvm
+```
 
 ***(building may take some time)***
 
