@@ -9,9 +9,7 @@ This is the accompanying prototype code for my blog post (coming soon ...).
 
 Reflector is a clang based tool, it requires the LLVM and Clang source tree. You can get more information on the [official site](http://clang.llvm.org/get_started.html).
 
-**NB:** For convenience, I'm using the github mirror of the llvm/clang sources below if you're wondering why there's a difference with the official site.
-
-Requires [git](https://git-scm.com/) and [cmake](https://cmake.org/).
+Requires [git](https://git-scm.com/), [cmake](https://cmake.org/) and [python](https://www.python.org/) (required by cmake)
 
 
 **Get LLVM**
