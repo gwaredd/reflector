@@ -1,15 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="classes.cpp" />
-    <ClCompile Include="example.cpp" />
-    <ClCompile Include="json.cpp" />
-    <ClCompile Include="rtti.cpp" />
+    <ClCompile Include="Serialisation\classes.cpp" />
+    <ClCompile Include="Serialisation\example1.cpp" />
+    <ClCompile Include="Serialisation\json.cpp" />
+    <ClCompile Include="Serialisation\rtti.cpp" />
     <ClCompile Include="..\gwRTTI\gwRTTI.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="classes.h" />
-    <ClInclude Include="json.h" />
+    <ClInclude Include="Serialisation\classes.h" />
+    <ClInclude Include="Serialisation\json.h" />
     <ClInclude Include="..\gwRTTI\gwRTTI.h" />
   </ItemGroup>
 </Project>

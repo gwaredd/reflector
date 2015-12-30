@@ -6,7 +6,7 @@
 #include "gwRTTI/gwRTTI.h"
 #include "ModuleA.h"
 
-#if defined( WIN32 )
+#if defined( _WIN32 )
     #pragma comment( lib, "ModuleRTTI.lib" )
     #pragma comment( lib, "ModuleA.lib" )
 #endif

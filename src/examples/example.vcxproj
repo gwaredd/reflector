@@ -18,11 +18,24 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\gwRTTI\gwRTTI.cpp" />
+    <ClCompile Include="Serialisation\classes.cpp" />
+    <ClCompile Include="Serialisation\example1.cpp" />
+    <ClCompile Include="Serialisation\json.cpp" />
+    <ClCompile Include="Serialisation\rtti.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\gwRTTI\gwRTTI.h" />
+    <ClInclude Include="Serialisation\classes.h" />
+    <ClInclude Include="Serialisation\json.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{9C5539A4-B913-49DD-B3B8-F8C1DDC9614D}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>example</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <ProjectName>example1</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -151,18 +164,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="..\gwRTTI\gwRTTI.cpp" />
-    <ClCompile Include="classes.cpp" />
-    <ClCompile Include="example.cpp" />
-    <ClCompile Include="json.cpp" />
-    <ClCompile Include="rtti.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\gwRTTI\gwRTTI.h" />
-    <ClInclude Include="classes.h" />
-    <ClInclude Include="json.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

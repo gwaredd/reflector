@@ -3,15 +3,22 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "example", "example.vcxproj", "{9C5539A4-B913-49DD-B3B8-F8C1DDC9614D}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "example1", "example.vcxproj", "{9C5539A4-B913-49DD-B3B8-F8C1DDC9614D}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ModuleA", "Modules\ModuleA.vcxproj", "{DC53117A-83A4-4422-A713-505AC27D859D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{77B673E1-AD8D-43EB-97F5-83580DBCDAC6} = {77B673E1-AD8D-43EB-97F5-83580DBCDAC6}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ModuleB", "Modules\ModuleB.vcxproj", "{7C136E30-8DB4-4987-AE7A-2318DBF18BB7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DC53117A-83A4-4422-A713-505AC27D859D} = {DC53117A-83A4-4422-A713-505AC27D859D}
+		{77B673E1-AD8D-43EB-97F5-83580DBCDAC6} = {77B673E1-AD8D-43EB-97F5-83580DBCDAC6}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ModuleRTTI", "Modules\ModuleRTTI.vcxproj", "{77B673E1-AD8D-43EB-97F5-83580DBCDAC6}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "example2", "example2\example2.vcxproj", "{F0E04888-3F82-4E16-A17D-8FD513D3E14A}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "example2", "Modules\example2.vcxproj", "{F0E04888-3F82-4E16-A17D-8FD513D3E14A}"
 	ProjectSection(ProjectDependencies) = postProject
 		{7C136E30-8DB4-4987-AE7A-2318DBF18BB7} = {7C136E30-8DB4-4987-AE7A-2318DBF18BB7}
 		{DC53117A-83A4-4422-A713-505AC27D859D} = {DC53117A-83A4-4422-A713-505AC27D859D}
