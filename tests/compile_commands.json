@@ -1,5 +1,0 @@
-[{
-  "directory": "/Users/gwaredd/Dropbox/Dev/Reflector/tests",
-  "file": "test.cpp",
-  "command": "c++ -std=c++11 -fno-exceptions -fno-rtti -o test.o -c test.cpp"
-}]

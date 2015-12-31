@@ -133,26 +133,29 @@ class ReflectFrontendAction : public ASTFrontendAction
 
 int main( int argc, const char* argv[] )
 {
+    if( argc < 2 )
+    {
+        llvm::errs() << "Usage: " << argv[0] << " <source file> -- [clang options]\n";
+        return 1;
+    }
+    
     // parse command line
 
-    cl::OptionCategory  Options( "Extras" );
-    cl::opt<bool>       ShowErrors( "show-errors", cl::cat( Options ) );
-
-    cl::extrahelp CommonHelp( CommonOptionsParser::HelpMessage );
-
-    CommonOptionsParser op( argc, argv, Options );
-
-
-    // create tool
-
-    ClangTool Tool( op.getCompilations(), op.getSourcePathList() );
-
-    if( ShowErrors.getValue() == false )
+    auto compilationDatabase = FixedCompilationDatabase::loadFromCommandLine( argc, argv );
+    
+    if( compilationDatabase == nullptr )
     {
-        IgnoringDiagConsumer diagConsumer; // turn off error diagnostics
-        Tool.setDiagnosticConsumer( &diagConsumer );
+        llvm::errs() << "Failed to load compilation database (NB: the '--' is required)\n";
+        llvm::errs() << "Usage: " << argv[0] << " <source file> -- [clang options]\n";
+        return 1;
     }
+    
+    // create tool
+    
+    std::vector< std::string > files;
+    files.push_back( argv[1] );
 
+    ClangTool Tool( *compilationDatabase, files );
 
     // run
 

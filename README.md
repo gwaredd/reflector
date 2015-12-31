@@ -72,12 +72,10 @@ LLVM.sln
 
 ***(building may take some time)***
 
-If this all worked then the reflector binary should be here ... `build/bin/reflector` (or `build\debug\bin` on windows)
-
-To test reflector on some code. Edit the file `reflector/tests/compile_commands.json` and replace the directory field with the absolute path to that directory. Then run ...
+If this all worked then the reflector binary should be here ... `build/bin/reflector` (or `build\debug\bin` on windows). To test ...
 
 ```bash
-    ./bin/reflector --show-errors ../reflector/tests/test.cpp
+    ./bin/reflector ../src/tests/test.cpp --
 ```
 
 This should output JSON data to the stdout.

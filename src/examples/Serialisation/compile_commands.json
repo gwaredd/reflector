@@ -1,6 +1,0 @@
-[{
-    "directory": "/Users/gwaredd/Dropbox/Dev/Reflector/src/examples/Serialisation",
-    "file": "example1.cpp",
-    "command": "c++ -I.. -std=c++11 -fno-exceptions -fno-rtti -o test.o -c example1.cpp"
-}]
-
