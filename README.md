@@ -45,12 +45,14 @@ On windows
 robocopy reflector\src\reflector llvm\tools\clang\tools\reflector
 ```
 
-Add the project to the cmake file, in `llvm/tools/clang/tools/CMakeLists.txt` add ...
+Add the project to cmake
+
+Edit `llvm/tools/clang/tools/CMakeLists.txt` and add to the end ...
 ```
 add_clang_subdirectory(reflector)
 ```
 
-To the end of the file, it will now be built as part of the llvm project.
+Reflector will now be built when you build clang.
 
 **Make the things!**
 
@@ -72,10 +74,10 @@ LLVM.sln
 
 ***(building may take some time)***
 
-If this all worked then the reflector binary should be here ... `build/bin/reflector` (or `build\debug\bin` on windows). To test ...
+If this all worked then the reflector binary should be in `build/bin` (or `build\debug\bin` on windows). To test ...
 
 ```bash
-    ./bin/reflector ../src/tests/test.cpp --
+    ./bin/reflector ../tests/test.cpp -- -Wall
 ```
 
 This should output JSON data to the stdout.
