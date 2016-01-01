@@ -127,37 +127,62 @@ class ReflectFrontendAction : public ASTFrontendAction
         JSON mJSON;
 
 };
+            
+
+////////////////////////////////////////////////////////////////////////////////
+            
+const char* invocation = nullptr;
+            
+int Usage()
+{
+    llvm::errs() << "Usage: " << invocation << " <source file> -- [clang options]\n";
+    return 1;
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
 
 int main( int argc, const char* argv[] )
 {
-    if( argc < 2 )
+    invocation = argv[ 0 ];
+    
+    if( argc < 3 )
     {
-        llvm::errs() << "Usage: " << argv[0] << " <source file> -- [clang options]\n";
-        return 1;
+        return Usage();
     }
     
-    // parse command line
-
-    auto compilationDatabase = FixedCompilationDatabase::loadFromCommandLine( argc, argv );
     
-    if( compilationDatabase == nullptr )
-    {
-        llvm::errs() << "Failed to load compilation database (NB: the '--' is required)\n";
-        llvm::errs() << "Usage: " << argv[0] << " <source file> -- [clang options]\n";
-        return 1;
-    }
-    
-    // create tool
+    // files
     
     std::vector< std::string > files;
-    files.push_back( argv[1] );
+    
+    auto arg = &argv[ 1 ];
+    
+    for( auto count = 1; count < argc && strcmp( "--", *arg ) != 0; ++count, ++arg )
+    {
+        files.push_back( *arg );
+    }
+    
+    if( files.size() < 1 )
+    {
+        return Usage();
+    }
+    
+    
+    // compilation options
 
-    ClangTool Tool( *compilationDatabase, files );
+    auto options = FixedCompilationDatabase::loadFromCommandLine( argc, argv );
+    
+    if( options == nullptr )
+    {
+        llvm::errs() << "Failed to load compilation database\n";
+        return Usage();
+    }
+    
 
-    // run
+    // run tool
+    
+    ClangTool Tool( *options, files );
 
     return Tool.run( newFrontendActionFactory< ReflectFrontendAction >().get() );
 }
