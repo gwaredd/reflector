@@ -45,9 +45,12 @@ On windows
 robocopy reflector\src\reflector llvm\tools\clang\tools\reflector
 ```
 
-Add the project to cmake
+**Add the project to cmake**
 
-Edit `llvm/tools/clang/tools/CMakeLists.txt` and add to the end ...
+Open `llvm/tools/clang/tools/CMakeLists.txt`
+
+Add this line to the end of the file
+
 ```
 add_clang_subdirectory(reflector)
 ```

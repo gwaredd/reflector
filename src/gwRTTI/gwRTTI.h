@@ -75,9 +75,9 @@ namespace gw
             protected:
 
                 template<typename T> friend struct TypeInfoImpl;
-                static const TypeInfo* FindOrCreate( const char* funcsig );
-
                 template<typename T> friend struct Register;
+
+                static const TypeInfo* FindOrCreate( const char* funcsig );
                 static void Register( TypeInfo* );
         };
 
